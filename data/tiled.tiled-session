@@ -1,0 +1,82 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "D:/Project/assets/tilesets/set.tsx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "D:/Project/assets/tilesets/set.tsx": {
+            "scaleInDock": 2,
+            "scaleInEditor": 1.5
+        },
+        "D:/Project/assets/tilesets/tilesets_1.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "D:/Project/assets/tilesets/tilesets_2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "D:/Project/assets/tilesets/tilesets_3.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "D:/Project/assets/tilesets/tilesets_4.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "D:/Project/assets/tilesets/tilesets_5.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "level_1.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 10,
+            "viewCenter": {
+                "x": 242,
+                "y": 226.3333333333333
+            }
+        },
+        "tilets_1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilets_2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.imagePath": "D:/Project/assets/tilesets",
+    "map.height": 25,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 30,
+    "openFiles": [
+        "D:/Project/assets/tilesets/set.tsx",
+        "level_1.tmx"
+    ],
+    "project": "tiled.tiled-project",
+    "recentFiles": [
+        "level_1.tmx",
+        "D:/Project/assets/tilesets/set.tsx",
+        "D:/Project/assets/tilesets/tilesets_5.tsx",
+        "D:/Project/assets/tilesets/tilesets_4.tsx",
+        "D:/Project/assets/tilesets/tilesets_3.tsx",
+        "D:/Project/assets/tilesets/tilesets_2.tsx",
+        "D:/Project/assets/tilesets/tilesets_1.tsx",
+        "tilets_2.tsx",
+        "tilets_1.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.margin": 1,
+    "tileset.spacing": 1,
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}
