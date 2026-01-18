@@ -1,9 +1,8 @@
 import arcade
-from core import *
-from level_1 import GameWindow
+from utils import Game
 
 def main():
-    window = GameWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    window = Game()
     window.setup()
     arcade.run()
 
