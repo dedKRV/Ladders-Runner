@@ -112,10 +112,10 @@
         },
         "level_1.tmx": {
             "scale": 0.75,
-            "selectedLayer": 3,
+            "selectedLayer": 9,
             "viewCenter": {
-                "x": 614.6666666666665,
-                "y": 424
+                "x": 594.6666666666665,
+                "y": 233.33333333333337
             }
         },
         "tilets_1.tsx": {

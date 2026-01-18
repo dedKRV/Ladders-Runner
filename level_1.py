@@ -5,16 +5,19 @@ from enemies import Enemy, Bullet, Card
 from enemy_config import LEVEL_1_ENEMIES, ENEMY_Y_OFFSET, LEVEL_1_CARDS
 from control import Controls
 
+
 class GameWindow(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
         arcade.set_background_color(BACKGROUND_COLOR)
 
+        # Основные игровые объекты
         self.player = None
         self.player_spritelist = None
         self.tile_map = None
         self.walls = None
         self.ladders_list = None
+
         self.entry_list = None
         self.exit_list = None
         self.damage_list = None
@@ -23,8 +26,10 @@ class GameWindow(arcade.Window):
         self.jump_list = None
         self.cards_list = None
         self.spawn_entities_list = None
+
         self.animation_layer_sprites = {}
         self.jump_animation_sprites = {}
+
         self.physics_engine = None
 
         self.enemies = None
@@ -36,6 +41,7 @@ class GameWindow(arcade.Window):
         self.is_jumping = False
         self.is_climbing = False
 
+        # Таймеры анимаций
         self.animation_timer = 0
         self.current_animation_frame = 0
         self.jump_animation_timer = 0
@@ -51,6 +57,7 @@ class GameWindow(arcade.Window):
         self.jump_animation_duration = 0.4
         self.jump_animation_elapsed = 0
 
+        # Здоровье и урон
         self.player_health = PLAYER_MAX_HEALTH
         self.damage_cooldown = 0
         self.DAMAGE_COOLDOWN_TIME = 0.5
@@ -61,6 +68,7 @@ class GameWindow(arcade.Window):
         self.exit_animation_visible = True
 
     def setup(self):
+        """Инициализация уровня"""
         self.player = Player()
         self.player_spritelist = arcade.SpriteList()
         self.player_spritelist.append(self.player)
@@ -85,6 +93,7 @@ class GameWindow(arcade.Window):
             "jump": {"use_spatial_hash": True},
             "spawn_entities": {"use_spatial_hash": True},
         }
+
 
         for layer_name in self.animation_layers:
             layer_options[layer_name] = {"use_spatial_hash": False}
@@ -113,6 +122,7 @@ class GameWindow(arcade.Window):
         self.spawn_entities_list = self.tile_map.sprite_lists.get('spawn_entities', arcade.SpriteList())
         self.exit_animation_list = self.tile_map.sprite_lists.get('exit_animation', arcade.SpriteList())
 
+        # Загрузка анимационных слоев
         for layer_name in self.animation_layers:
             self.animation_layer_sprites[layer_name] = self.tile_map.sprite_lists.get(layer_name, arcade.SpriteList())
 
@@ -140,12 +150,14 @@ class GameWindow(arcade.Window):
         self.update_exit_visibility()
 
     def load_cards(self):
+        """Загрузка карт на уровень"""
         for card_pos in LEVEL_1_CARDS:
             x, y = card_pos
             card = Card(x, y)
             self.cards_list.append(card)
 
     def load_enemies_from_spawn_points(self):
+        """Создание врагов в точках спавна"""
         if self.spawn_entities_list:
             attack_cooldown, damage = LEVEL_1_ENEMIES
             for spawn in self.spawn_entities_list:
@@ -155,6 +167,7 @@ class GameWindow(arcade.Window):
                 self.enemies.append(enemy)
 
     def update_exit_visibility(self):
+        """Показать/скрыть выход в зависимости от собранных карт"""
         if self.cards_collected >= self.total_cards:
             self.exit_visible = True
             self.exit_animation_visible = False
@@ -163,6 +176,7 @@ class GameWindow(arcade.Window):
             self.exit_animation_visible = True
 
     def apply_damage(self, damage_amount):
+        """Нанесение урона игроку"""
         if self.damage_cooldown <= 0:
             self.player_health -= damage_amount
             self.damage_cooldown = self.DAMAGE_COOLDOWN_TIME
@@ -174,6 +188,7 @@ class GameWindow(arcade.Window):
                 self.player.center_y = TILE_SIZE * 17
 
     def check_collisions(self):
+        """Проверка всех коллизий"""
         damage_hit_list = arcade.check_for_collision_with_list(self.player, self.damage_list)
         if damage_hit_list:
             self.apply_damage(DAMAGE_LAYER_DAMAGE)
@@ -189,6 +204,7 @@ class GameWindow(arcade.Window):
             self.jump_animation_elapsed = 0
             self.player.change_y = JUMP_POWER
 
+        # Сбор карт
         cards_hit_list = arcade.check_for_collision_with_list(self.player, self.cards_list)
         for card in cards_hit_list:
             if card in self.cards_list:
@@ -196,6 +212,7 @@ class GameWindow(arcade.Window):
                 self.cards_collected += 1
                 self.update_exit_visibility()
 
+        # Коллизии пуль врагов
         bullets_to_remove = []
         for bullet in self.enemy_bullets:
             wall_hit_list = arcade.check_for_collision_with_list(bullet, self.walls)
@@ -207,6 +224,7 @@ class GameWindow(arcade.Window):
                 self.apply_damage(bullet.damage)
                 bullets_to_remove.append(bullet)
 
+        # Удаление пуль
         for bullet in bullets_to_remove:
             if bullet in self.enemy_bullets:
                 self.enemy_bullets.remove(bullet)
@@ -214,6 +232,7 @@ class GameWindow(arcade.Window):
                     if bullet in enemy.bullets:
                         enemy.bullets.remove(bullet)
 
+        # Коллизии пуль игрока
         player_bullets_to_remove = []
         for bullet in self.player.player_bullets:
             wall_hit_list = arcade.check_for_collision_with_list(bullet, self.walls)
@@ -221,18 +240,23 @@ class GameWindow(arcade.Window):
                 player_bullets_to_remove.append(bullet)
                 continue
 
+            # Попадание по врагам
             for enemy in self.enemies:
                 if arcade.check_for_collision(bullet, enemy):
                     player_bullets_to_remove.append(bullet)
                     self.enemies.remove(enemy)
                     break
 
+        # Удаление пуль игрока
         for bullet in player_bullets_to_remove:
             if bullet in self.player.player_bullets:
                 self.player.player_bullets.remove(bullet)
 
     def on_draw(self):
+        """Отрисовка всех объектов"""
         self.clear()
+
+        # Фоновые слои, скоро добавлю изображение на фон
         background_layers = ['background', 'background_2']
         for layer_name in background_layers:
             if layer_name in self.tile_map.sprite_lists:
@@ -267,10 +291,10 @@ class GameWindow(arcade.Window):
             self.jump_animation_sprites[self.visible_jump_animation_layer].draw()
 
         self.player_spritelist.draw()
-
         for bullet in self.player.player_bullets:
             bullet.draw()
 
+        # UI: здоровье
         health_text = f"Здоровье: {self.player_health}/{PLAYER_MAX_HEALTH}"
         arcade.draw_text(
             health_text,
@@ -282,6 +306,7 @@ class GameWindow(arcade.Window):
             bold=True
         )
 
+        # UI: карты
         cards_text = f"Карты: {self.cards_collected}/{self.total_cards}"
         arcade.draw_text(
             cards_text,
@@ -294,6 +319,7 @@ class GameWindow(arcade.Window):
         )
 
     def on_update(self, delta_time):
+        """Основной игровой цикл"""
         self.animation_timer += delta_time
         if self.animation_timer >= ANIMATION_FRAME_TIME:
             self.animation_timer = 0
@@ -321,6 +347,7 @@ class GameWindow(arcade.Window):
         for card in self.cards_list:
             card.update(delta_time)
 
+        # Обновление врагов
         for enemy in self.enemies:
             enemy.update(self.player, delta_time, self.walls)
 
@@ -342,12 +369,14 @@ class GameWindow(arcade.Window):
                     elif bullet not in self.enemy_bullets:
                         self.enemy_bullets.append(bullet)
 
+            # Удаление пуль врагов
             for bullet in bullets_to_remove:
                 if bullet in enemy.bullets:
                     enemy.bullets.remove(bullet)
                 if bullet in self.enemy_bullets:
                     self.enemy_bullets.remove(bullet)
 
+        # Очистка вышедших за экран пуль врагов
         bullets_to_remove = []
         for bullet in self.enemy_bullets:
             if bullet.should_remove:
@@ -365,6 +394,7 @@ class GameWindow(arcade.Window):
                 if bullet in enemy.bullets:
                     enemy.bullets.remove(bullet)
 
+        # Очистка пуль игрока
         player_bullets_to_remove = []
         for bullet in self.player.player_bullets:
             bullet.update(delta_time)
@@ -380,17 +410,21 @@ class GameWindow(arcade.Window):
             if bullet in self.player.player_bullets:
                 self.player.player_bullets.remove(bullet)
 
+        # Проверка нахождения на лестнице
         self.on_ladder = self.physics_engine.is_on_ladder()
 
+        # Получение управления
         movement = self.controls.get_movement()
         left_pressed = movement["left"]
         right_pressed = movement["right"]
         up_pressed = movement["up"]
         down_pressed = movement["down"]
 
+        # Определение состояния
         self.is_running = (left_pressed or right_pressed) and not self.on_ladder
         self.is_climbing = self.on_ladder and (up_pressed or down_pressed)
 
+        # Обновление анимации игрока
         self.player.update_animation(
             delta_time,
             is_running=self.is_running,
@@ -401,6 +435,7 @@ class GameWindow(arcade.Window):
             right_pressed=right_pressed
         )
 
+        # Движение по лестницам
         if self.on_ladder:
             if up_pressed and not down_pressed:
                 self.player.change_y = LADDER_SPEED
@@ -415,6 +450,7 @@ class GameWindow(arcade.Window):
                 self.player.change_x = PLAYER_SPEED
             else:
                 self.player.change_x = 0
+        # Движение по земле
         else:
             if left_pressed and not right_pressed:
                 self.player.change_x = -PLAYER_SPEED
@@ -423,6 +459,7 @@ class GameWindow(arcade.Window):
             else:
                 self.player.change_x = 0
 
+            # Прыжок
             if up_pressed and not self.on_ladder and self.physics_engine.can_jump():
                 self.player.change_y = PLAYER_JUMP_SPEED
                 self.player.start_jump_animation()
@@ -431,14 +468,17 @@ class GameWindow(arcade.Window):
         self.physics_engine.update()
 
     def on_key_press(self, key, modifiers):
+        """Обработка нажатия клавиш"""
         if key == arcade.key.KEY_1:
             self.player.toggle_weapon()
         else:
             self.controls.on_key_press(key, modifiers)
 
     def on_key_release(self, key, modifiers):
+        """Обработка отпускания клавиш"""
         self.controls.on_key_release(key, modifiers)
 
     def on_mouse_press(self, x, y, button, modifiers):
+        """Обработка нажатия мыши"""
         if button == arcade.MOUSE_BUTTON_LEFT:
-            self.player.shoot()
+            self.player.shoot()  # Стрельба

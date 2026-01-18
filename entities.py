@@ -5,6 +5,7 @@ from player_config import select_player
 
 class Weapon:
     def __init__(self, weapon_type="biker"):
+        """Инициализация оружия выбранного типа"""
         self.weapon_type = weapon_type
         self.idle_texture = None
         self.idle_texture_flipped = None
@@ -39,19 +40,23 @@ class Weapon:
             self.shoot_texture_flipped = self.shoot_texture.flip_left_right()
 
     def activate(self):
+        """Активировать оружие"""
         self.is_active = True
         self.is_shooting = False
 
     def deactivate(self):
+        """Деактивировать оружие"""
         self.is_active = False
         self.is_shooting = False
 
     def shoot(self):
+        """Произвести выстрел"""
         if self.is_active:
             self.is_shooting = True
             self.shoot_timer = 0
 
     def update(self, delta_time, facing_direction):
+        """Обновление состояния оружия"""
         self.facing_direction = facing_direction
 
         if self.is_shooting:
@@ -61,6 +66,7 @@ class Weapon:
                 self.shoot_timer = 0
 
     def get_current_texture(self):
+        """Получить текущую текстуру оружия"""
         if not self.is_active:
             return None
 
@@ -78,6 +84,7 @@ class Weapon:
 
 class PlayerBullet(arcade.Sprite):
     def __init__(self, character_type, scale=0.5):
+        """Создание пули игрока"""
         if character_type == "biker":
             texture_path = "assets/sprites/Players/2/5 Bullets/6.png"
             damage = 10
@@ -96,6 +103,7 @@ class PlayerBullet(arcade.Sprite):
         self.should_remove = False
 
     def update(self, delta_time):
+        """Обновление позиции пули"""
         self.center_x += self.change_x
         self.center_y += self.change_y
         self.current_lifetime += delta_time
@@ -106,6 +114,7 @@ class PlayerBullet(arcade.Sprite):
 
 class Player(arcade.Sprite):
     def __init__(self, character_type=None):
+        """Создание игрока"""
         if character_type is None:
             character_type = select_player()
         self.character_type = character_type
@@ -142,6 +151,7 @@ class Player(arcade.Sprite):
         self.jump_animation_frame = 0
 
     def load_textures(self):
+        """Загрузка текстур для анимаций"""
         if self.character_type == "biker":
             for i in range(1, 7):
                 run_texture = arcade.load_texture(f"assets/sprites/Players/1/1 Biker/Biker_run_c/Biker_run_{i}.png")
@@ -199,11 +209,13 @@ class Player(arcade.Sprite):
                 self.climb_textures_flipped.append(climb_texture_flipped)
 
     def set_weapon_texture(self):
+        """Установить текстуру оружия"""
         weapon_texture = self.weapon.get_current_texture()
         if weapon_texture:
             self.texture = weapon_texture
 
     def set_run_texture(self):
+        """Установить текстуры для бега"""
         if self.facing_direction < 0:
             self.textures = self.run_textures_flipped
         else:
@@ -212,6 +224,7 @@ class Player(arcade.Sprite):
         self.set_texture(self.current_texture)
 
     def set_jump_texture(self):
+        """Установить текстуры для прыжка"""
         if self.facing_direction < 0:
             self.textures = self.jump_textures_flipped
         else:
@@ -220,6 +233,7 @@ class Player(arcade.Sprite):
         self.set_texture(self.current_texture)
 
     def set_climb_texture(self):
+        """Установить текстуры для лазания"""
         if self.facing_direction < 0:
             self.textures = self.climb_textures_flipped
         else:
@@ -228,12 +242,14 @@ class Player(arcade.Sprite):
         self.set_texture(self.current_texture)
 
     def start_jump_animation(self):
+        """Начать анимацию прыжка"""
         self.is_jumping_animation = True
         self.jump_animation_timer = 0
         self.jump_animation_frame = 0
         self.set_jump_texture()
 
     def toggle_weapon(self):
+        """Переключить оружие (вкл/выкл)"""
         self.is_armed = not self.is_armed
         if self.is_armed:
             self.weapon.activate()
@@ -241,6 +257,7 @@ class Player(arcade.Sprite):
             self.weapon.deactivate()
 
     def shoot(self):
+        """Произвести выстрел из оружия"""
         if self.is_armed and not self.weapon.is_shooting:
             self.weapon.shoot()
 
@@ -255,6 +272,7 @@ class Player(arcade.Sprite):
 
     def update_animation(self, delta_time, is_running=False, is_jumping=False, is_climbing=False, is_on_ladder=False,
                          left_pressed=False, right_pressed=False):
+        """Обновление анимации игрока"""
         self.animation_timer += delta_time
 
         if left_pressed:

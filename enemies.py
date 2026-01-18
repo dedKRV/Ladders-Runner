@@ -5,6 +5,7 @@ from core import *
 class Enemy(arcade.Sprite):
     def __init__(self, x, y, attack_cooldown=2.0, damage=10, y_offset=10,
                  texture="assets/sprites/Enemies/2/Attack_c/Attack_1.png", scale=1):
+        """Создание врага"""
         super().__init__(texture, scale=scale)
         self.center_x = x
         self.center_y = y + y_offset
@@ -15,6 +16,7 @@ class Enemy(arcade.Sprite):
         self.damage = damage
 
     def update(self, player, delta_time, walls):
+        """Обновление логики врага"""
         if self.current_cooldown > 0:
             self.current_cooldown -= delta_time
 
@@ -25,6 +27,7 @@ class Enemy(arcade.Sprite):
             self.current_cooldown = self.attack_cooldown
 
     def shoot(self, player):
+        """Стрельба в игрока"""
         bullet = Bullet(self.damage)
         bullet.center_x = self.center_x
         bullet.center_y = self.center_y
@@ -43,6 +46,7 @@ class Enemy(arcade.Sprite):
 
 class Bullet(arcade.Sprite):
     def __init__(self, damage, texture="assets/sprites/Enemies/2/Projectile_c/Projectile_1.png", scale=0.5):
+        """Создание пули врага"""
         super().__init__(texture, scale=scale)
         self.speed = BULLET_SPEED
         self.damage = damage
@@ -51,6 +55,7 @@ class Bullet(arcade.Sprite):
         self.should_remove = False
 
     def update(self, delta_time):
+        """Обновление пули"""
         super().update()
         self.current_lifetime += delta_time
 
@@ -60,6 +65,7 @@ class Bullet(arcade.Sprite):
 
 class Card(arcade.Sprite):
     def __init__(self, x, y):
+        """Создание коллекционной карты"""
         super().__init__("assets/sprites/Items/Card_c/Card_1.png", scale=1)
         self.center_x = x * TILE_SIZE * TILE_SCALING + TILE_SIZE * TILE_SCALING / 2
         self.center_y = y * TILE_SIZE * TILE_SCALING + TILE_SIZE * TILE_SCALING / 2
@@ -77,6 +83,7 @@ class Card(arcade.Sprite):
         ]
 
     def update(self, delta_time):
+        """Обновление анимации карты"""
         self.animation_timer += delta_time
         if self.animation_timer >= COLLECTIBLE_ANIMATION_SPEED:
             self.animation_timer = 0

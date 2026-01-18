@@ -7,7 +7,7 @@ class Game(GameWindow):
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Platformer")
         self.camera = arcade.Camera2D()
-        self.camera.zoom = 2.0
+        self.camera.zoom = ZOOM_CAM # В core.py
         self.level_width = 2000
         self.level_height = 1000
 
