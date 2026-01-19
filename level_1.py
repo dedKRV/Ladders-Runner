@@ -72,6 +72,11 @@ class GameWindow(arcade.Window):
         self.exit_visible = False
         self.exit_animation_visible = True
 
+        self.stars_earned = 0
+        self.game_completed = False
+        self.completion_timer = 0
+        self.completion_message = ""
+
     def setup(self):
         """Инициализация уровня"""
         self.player = Player()
@@ -243,25 +248,48 @@ class GameWindow(arcade.Window):
                 self.shoot_timer = 0
 
     def check_game_completion(self):
-        """Проверка условий завершения игры"""
-        if not self.exit_visible:
+        """Проверка завершения игры и подсчет звезд"""
+        exit_hit_list = arcade.check_for_collision_with_list(self.player, self.exit_list)
+
+        if not exit_hit_list:
             return False
 
+        # Проверяем все ли карты собраны
+        all_cards_collected = self.cards_collected >= self.total_cards
+
+        if not all_cards_collected:
+            return False  # Не все карты собраны - нельзя завершить
+
+        # Проверяем все ли враги убиты
         all_enemies_dead = True
         for enemy in self.enemies:
             if enemy.state != 'dead':
                 all_enemies_dead = False
                 break
 
-        exit_hit_list = arcade.check_for_collision_with_list(self.player, self.exit_list)
+        # Подсчет звезд и вывод в консоль
+        if all_cards_collected and all_enemies_dead:
+            self.stars_earned = 2  # 2 звезды
+            print("★ ★ - Отлично!")
+            print(f"Собрано карт: {self.cards_collected}/{self.total_cards}")
+            print(f"Убито врагов: Все!")
+        elif all_cards_collected:
+            self.stars_earned = 1  # 1 звезда
+            print("УРОВЕНЬ ПРОЙДЕН!")
+            print("★ - Хорошо!")
+            print(f"Собрано карт: {self.cards_collected}/{self.total_cards}")
 
-        if (self.cards_collected >= self.total_cards and
-                all_enemies_dead and
-                exit_hit_list):
-            arcade.close_window()
-            return True
+            killed_enemies = 0
+            for enemy in self.enemies:
+                if enemy.state == 'dead':
+                    killed_enemies += 1
+            print(f"Убито врагов: {killed_enemies}/{len(self.enemies)}")
+            print("=" * 50)
 
-        return False
+        self.game_completed = True
+        self.completion_timer = 1.0
+
+        return True
 
     def check_collisions(self):
         """Проверка всех коллизий"""
@@ -395,6 +423,12 @@ class GameWindow(arcade.Window):
 
     def on_update(self, delta_time):
         """Основной игровой цикл"""
+        # Если игра уже завершена
+        if self.game_completed:
+            self.completion_timer -= delta_time
+            if self.completion_timer <= 0:
+                arcade.close_window()
+            return
         self.player.center_x = max(0, min(self.player.center_x, LEVEL_WIDTH)) # создано для того, чтобы персонаж не вылетал за границы
         self.player.center_y = max(0, min(self.player.center_y, LEVEL_HEIGHT))
         # Анимация фоновых слоев

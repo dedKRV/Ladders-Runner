@@ -19,7 +19,10 @@ class Game(GameWindow):
         super().setup()
 
     def on_update(self, delta_time):
+        """Обновление игры"""
         super().on_update(delta_time)
+        if hasattr(self, 'game_completed') and self.game_completed:
+            return
         mouse_x = self._mouse_x
         mouse_y = self._mouse_y
         mouse_x, mouse_y = self.camera.unproject((mouse_x, mouse_y))[:2]

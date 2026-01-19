@@ -1,6 +1,6 @@
 import arcade
 from core import *
-from player_config import select_player
+from config_gun import get_gun_choice, select_player
 from weapon import Weapon, PlayerBullet
 
 
@@ -11,7 +11,9 @@ class Player(arcade.Sprite):
             character_type = select_player()
         self.character_type = character_type
 
-        self.weapon = Weapon(self.character_type)
+        weapon_type = get_gun_choice()
+
+        self.weapon = Weapon(weapon_type, self.character_type)
         self.weapon.activate()
         self.is_armed = True
 

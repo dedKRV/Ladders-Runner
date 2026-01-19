@@ -1,40 +1,68 @@
 import arcade
 from core import PLAYER_BULLET_SPEED, PLAYER_BULLET_LIFETIME
+from config_gun import get_gun_choice
 
 
 class Weapon:
-    def __init__(self, weapon_type="biker"):
+    def __init__(self, weapon_type=None, player_type="biker"):
+        if weapon_type is None:
+            weapon_type = get_gun_choice()
+
         self.weapon_type = weapon_type
+        self.player_type = player_type
+
         self.idle_texture = None
         self.idle_texture_flipped = None
         self.shoot_texture = None
         self.shoot_texture_flipped = None
+
         self.is_active = False
         self.is_shooting = False
         self.facing_direction = 1
         self.shoot_timer = 0
 
-        if weapon_type == "biker":
-            self.idle_texture = arcade.load_texture(
-                "assets/sprites/Players/Guns_Players/Biker/Biker_gun_1.png")
-            self.idle_texture_flipped = self.idle_texture.flip_left_right()
-            self.shoot_texture = arcade.load_texture(
-                "assets/sprites/Players/Guns_Players/Biker/Biker_gun_2.png")
-            self.shoot_texture_flipped = self.shoot_texture.flip_left_right()
+        self.load_textures()
 
-        elif weapon_type == "punk":
-            self.idle_texture = arcade.load_texture("assets/sprites/Players/Guns_Players/Punk/Punk_gun_1.png")
-            self.idle_texture_flipped = self.idle_texture.flip_left_right()
-            self.shoot_texture = arcade.load_texture(
-                "assets/sprites/Players/Guns_Players/Punk/Punk_gun_2.png")
-            self.shoot_texture_flipped = self.shoot_texture.flip_left_right()
+    def load_textures(self):
+        """Загрузка текстур оружия"""
+        base_path = "assets/sprites/Players/Guns_Players/"
 
-        elif weapon_type == "cyborg":
-            self.idle_texture = arcade.load_texture(
-                "assets/sprites/Players/Guns_Players/Cyborg/Cyborg_gun_1.png")
+        if self.player_type == "biker":
+            if self.weapon_type == "1":
+                self.idle_texture = arcade.load_texture(f"{base_path}Biker_gun_1/Biker_gun_1.png")
+                self.shoot_texture = arcade.load_texture(f"{base_path}Biker_gun_1/Biker_gun_2.png")
+            elif self.weapon_type == "2":
+                self.idle_texture = arcade.load_texture(f"{base_path}Biker_gun_2/Biker_gun_1.png")
+                self.shoot_texture = arcade.load_texture(f"{base_path}Biker_gun_2/Biker_gun_2.png")
+            elif self.weapon_type == "3":
+                self.idle_texture = arcade.load_texture(f"{base_path}Biker_gun_3/Biker_gun_1.png")
+                self.shoot_texture = arcade.load_texture(f"{base_path}Biker_gun_3/Biker_gun_2.png")
+
+        elif self.player_type == "punk":
+            if self.weapon_type == "1":
+                self.idle_texture = arcade.load_texture(f"{base_path}Punk_gun_1/Punk_gun_1.png")
+                self.shoot_texture = arcade.load_texture(f"{base_path}Punk_gun_1/Punk_gun_2.png")
+            elif self.weapon_type == "2":
+                self.idle_texture = arcade.load_texture(f"{base_path}Punk_gun_2/Punk_gun_1.png")
+                self.shoot_texture = arcade.load_texture(f"{base_path}Punk_gun_2/Punk_gun_2.png")
+            elif self.weapon_type == "3":
+                self.idle_texture = arcade.load_texture(f"{base_path}Punk_gun_3/Punk_gun_1.png")
+                self.shoot_texture = arcade.load_texture(f"{base_path}Punk_gun_3/Punk_gun_2.png")
+
+        elif self.player_type == "cyborg":
+            if self.weapon_type == "1":
+                self.idle_texture = arcade.load_texture(f"{base_path}Cyborg_gun_1/Cyborg_gun_1.png")
+                self.shoot_texture = arcade.load_texture(f"{base_path}Cyborg_gun_1/Cyborg_gun_2.png")
+            elif self.weapon_type == "2":
+                self.idle_texture = arcade.load_texture(f"{base_path}Cyborg_gun_1/Cyborg_gun_1.png")
+                self.shoot_texture = arcade.load_texture(f"{base_path}Cyborg_gun_1/Cyborg_gun_2.png")
+            elif self.weapon_type == "3":
+                self.idle_texture = arcade.load_texture(f"{base_path}Cyborg_gun_1/Cyborg_gun_1.png")
+                self.shoot_texture = arcade.load_texture(f"{base_path}Cyborg_gun_1/Cyborg_gun_2.png")
+
+        if self.idle_texture:
             self.idle_texture_flipped = self.idle_texture.flip_left_right()
-            self.shoot_texture = arcade.load_texture(
-                "assets/sprites/Players/Guns_Players/Cyborg/Cyborg_gun_2.png")
+        if self.shoot_texture:
             self.shoot_texture_flipped = self.shoot_texture.flip_left_right()
 
     def activate(self):
