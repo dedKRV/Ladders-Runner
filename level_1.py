@@ -77,6 +77,8 @@ class GameWindow(arcade.Window):
         self.completion_timer = 0
         self.completion_message = ""
 
+        self.play_time = 0.0
+
     def setup(self):
         """Инициализация уровня"""
         self.player = Player()
@@ -163,6 +165,7 @@ class GameWindow(arcade.Window):
             self.save_initial_enemies_state()
 
         self.update_exit_visibility()
+        self.play_time = 0.0
     def load_cards(self):
         """Загрузка карт на уровень"""
         for card_pos in LEVEL_1_CARDS:
@@ -265,12 +268,22 @@ class GameWindow(arcade.Window):
                 all_enemies_dead = False
                 break
 
-        # Вывод в консоль
-        if all_cards_collected and all_enemies_dead:
+        # Проверка времени (45 секунд для 3 звезды)
+        time_bonus = self.play_time <= PERFECT_TIME
+
+        # Подсчёт звёзд
+        if all_cards_collected and all_enemies_dead and time_bonus:
+            self.stars_earned = 3
+            print("★ ★ ★ - ИДЕАЛЬНО!")
+            print(f"Собрано карт: {self.cards_collected}/{self.total_cards}")
+            print(f"Убито врагов: Все!")
+            print(f"Время: {int(self.play_time)}с (бонус за скорость!)")
+        elif all_cards_collected and all_enemies_dead:
             self.stars_earned = 2
             print("★ ★ - Отлично!")
             print(f"Собрано карт: {self.cards_collected}/{self.total_cards}")
             print(f"Убито врагов: Все!")
+            print(f"Время: {int(self.play_time)}с")
         elif all_cards_collected:
             self.stars_earned = 1
             print("УРОВЕНЬ ПРОЙДЕН!")
@@ -282,6 +295,7 @@ class GameWindow(arcade.Window):
                 if enemy.state == 'dead':
                     killed_enemies += 1
             print(f"Убито врагов: {killed_enemies}/{len(self.enemies)}")
+            print(f"Время: {int(self.play_time)}с")
             print("=" * 50)
 
         self.game_completed = True
@@ -394,7 +408,19 @@ class GameWindow(arcade.Window):
 
         self.player_spritelist.draw()
         self.player.player_bullets.draw()  # Отрисовка пуль игрока
-
+        # UI: время
+        minutes = int(self.play_time // 60)
+        seconds = int(self.play_time % 60)
+        time_text = f"Время: {minutes:02d}:{seconds:02d}"
+        arcade.draw_text(
+            time_text,
+            10,
+            SCREEN_HEIGHT - 90,
+            UI_TEXT_COLOR,
+            UI_FONT_SIZE,
+            font_name=UI_FONT_NAME,
+            bold=True
+        )
         # UI: здоровье
         health_text = f"Здоровье: {self.player_health}/{PLAYER_MAX_HEALTH}"
         arcade.draw_text(
@@ -421,6 +447,8 @@ class GameWindow(arcade.Window):
 
     def on_update(self, delta_time):
         """Основной игровой цикл"""
+        if not self.game_completed:
+            self.play_time += delta_time
         # Если игра уже завершена
         if self.game_completed:
             self.completion_timer -= delta_time
@@ -604,3 +632,66 @@ class GameWindow(arcade.Window):
     def on_key_release(self, key, modifiers):
         """Обработка отпускания клавиш"""
         self.controls.on_key_release(key, modifiers)
+
+    def get_killed_enemy_indices(self):
+        """Получить индексы убитых врагов"""
+        killed_indices = []
+        for i, enemy in enumerate(self.enemies):
+            if enemy.state == 'dead':
+                killed_indices.append(i)
+        return killed_indices
+
+    def get_save_data(self):
+        """Получить данные для сохранения"""
+        from config_gun import PLAYER_CHOICE, WEAPON_CHOICE
+
+        return {
+            'level_number': 1,
+            'character_skin': PLAYER_CHOICE,
+            'weapon': int(WEAPON_CHOICE),
+            'player_x': self.player.center_x,
+            'player_y': self.player.center_y,
+            'player_health': self.player_health,
+            'enemies_killed': len(self.get_killed_enemy_indices()),
+            'cards_collected': self.cards_collected,
+            'total_cards': self.total_cards,
+            'play_time': self.play_time,
+            'killed_enemy_indices': self.get_killed_enemy_indices()
+        }
+
+    def load_from_save(self, save_data):
+        """Загрузить игру из сохранения"""
+        if not save_data:
+            return
+
+        # Загружаем позицию игрока
+        self.player.center_x = save_data['player_x']
+        self.player.center_y = save_data['player_y']
+        self.player_health = save_data['player_health']
+
+        # Загружаем собранные карты
+        self.cards_collected = save_data['cards_collected']
+        # Удаляем уже собранные карты
+        cards_to_remove = []
+        for i, card_pos in enumerate(self.initial_cards_data):
+            if i < save_data['cards_collected']:
+                for card in self.cards_list:
+                    x_tile = (card.center_x - TILE_SIZE * TILE_SCALING / 2) / (TILE_SIZE * TILE_SCALING)
+                    y_tile = (card.center_y - TILE_SIZE * TILE_SCALING / 2) / (TILE_SIZE * TILE_SCALING)
+                    if abs(x_tile - card_pos[0]) < 0.1 and abs(y_tile - card_pos[1]) < 0.1:
+                        cards_to_remove.append(card)
+                        break
+
+        for card in cards_to_remove:
+            if card in self.cards_list:
+                self.cards_list.remove(card)
+
+        # Загружаем убитых врагов
+        for enemy_index in save_data['killed_enemy_indices']:
+            if enemy_index < len(self.enemies):
+                self.enemies[enemy_index].state = 'dead'
+                self.enemies[enemy_index].health = 0
+
+        # Загружаем время
+        self.play_time = save_data['play_time']
+        self.update_exit_visibility()

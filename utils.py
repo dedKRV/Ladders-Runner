@@ -2,6 +2,7 @@ from core import *
 import arcade
 from level_1 import GameWindow
 import pygame
+from database import GameDatabase
 
 
 class Game(GameWindow):
@@ -16,6 +17,7 @@ class Game(GameWindow):
         # Добавляем паузу
         self.paused = False
         self.pause_menu = None
+        self.database = GameDatabase()
 
     def setup(self):
         pygame.init()  # кастомный курсор на Pygame
@@ -23,6 +25,9 @@ class Game(GameWindow):
                                            1.0)  # Загружаем текстуру курсора (масштаб 1.0)
         self.custom_cursor.visible = True
         super().setup()
+        if self.database.has_save():
+            save_data = self.database.load_game()
+            self.load_from_save(save_data)
 
         # Инициализируем меню паузы
         from ui import PauseMenu
@@ -70,6 +75,9 @@ class Game(GameWindow):
     def on_close(self):
         """Обработка закрытия окна"""
         super().on_close()
+        if not self.game_completed:
+            save_data = self.get_save_data()
+            self.database.save_game(save_data)
         pygame.quit()
 
     def on_draw(self):
@@ -130,6 +138,7 @@ class Game(GameWindow):
                 self.player.center_x = TILE_SIZE * 3
                 self.player.center_y = TILE_SIZE * 17
                 self.reset_level_state()
+                self.play_time = 0.0
                 self.paused = False
             return
 
