@@ -38,10 +38,11 @@ class GameDatabase:
                 player_health INTEGER NOT NULL,
                 enemies_killed INTEGER DEFAULT 0,
                 cards_collected INTEGER DEFAULT 0,
+                money_collected INTEGER DEFAULT 0,
                 total_cards INTEGER DEFAULT 0,
                 play_time REAL DEFAULT 0.0,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(level_number)  -- Уникальный уровень
+                UNIQUE(level_number)
             )
         ''')
 
@@ -73,8 +74,8 @@ class GameDatabase:
         cursor.execute('''
             INSERT INTO game_save 
             (level_number, character_skin, weapon, player_x, player_y, 
-             player_health, enemies_killed, cards_collected, total_cards, play_time)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             player_health, enemies_killed, cards_collected, money_collected, total_cards, play_time)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             game_data['level_number'],
             game_data['character_skin'],
@@ -84,6 +85,7 @@ class GameDatabase:
             game_data['player_health'],
             game_data['enemies_killed'],
             game_data['cards_collected'],
+            game_data['money_collected'],
             game_data['total_cards'],
             game_data['play_time']
         ))
@@ -129,6 +131,7 @@ class GameDatabase:
             'player_health': save['player_health'],
             'enemies_killed': save['enemies_killed'],
             'cards_collected': save['cards_collected'],
+            'money_collected': save['money_collected'],
             'total_cards': save['total_cards'],
             'play_time': save['play_time'],
             'killed_enemy_indices': killed_enemies

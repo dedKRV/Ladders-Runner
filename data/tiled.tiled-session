@@ -171,6 +171,9 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
+        "D:/Project/assets/tilesets/background.tsx": {
+            "dynamicWrapping": true
+        },
         "D:/Project/assets/tilesets/set.tsx": {
             "scaleInDock": 2,
             "scaleInEditor": 1.5
@@ -225,6 +228,14 @@
             "viewCenter": {
                 "x": 640.5,
                 "y": 366
+            }
+        },
+        "level_2.tmx": {
+            "scale": 0.7963671874999999,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 608.3876980428706,
+                "y": 344.06239270123126
             }
         },
         "pause.tmx": {

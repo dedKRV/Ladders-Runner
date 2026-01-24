@@ -162,7 +162,9 @@ class Enemy(arcade.Sprite):
                 self.texture = self.dying_textures_left[0]
             self.animation_frame = 0
             self.animation_timer = 0
-            return False
+
+            # Создаем деньги при смерти врага
+            return True
         else:
             self.state = 'hurt'
             self.animation_frame = 0
@@ -231,6 +233,32 @@ class Card(arcade.Sprite):
 
     def update(self, delta_time):
         """Обновление анимации карты"""
+        self.animation_timer += delta_time
+        if self.animation_timer >= COLLECTIBLE_ANIMATION_SPEED:
+            self.animation_timer = 0
+            self.current_frame = (self.current_frame + 1) % len(self.frames)
+            self.texture = arcade.load_texture(self.frames[self.current_frame])
+
+
+class Money(arcade.Sprite):
+    def __init__(self, x, y):
+        """Создание денег"""
+        super().__init__("assets/sprites/Items/Money_c/Money_1.png", scale=1)
+        self.center_x = x
+        self.center_y = y
+        self.animation_timer = 0
+        self.current_frame = 0
+        self.frames = [
+            "assets/sprites/Items/Money_c/Money_1.png",
+            "assets/sprites/Items/Money_c/Money_2.png",
+            "assets/sprites/Items/Money_c/Money_3.png",
+            "assets/sprites/Items/Money_c/Money_4.png",
+            "assets/sprites/Items/Money_c/Money_5.png",
+            "assets/sprites/Items/Money_c/Money_6.png",
+        ]
+
+    def update(self, delta_time):
+        """Обновление анимации денег"""
         self.animation_timer += delta_time
         if self.animation_timer >= COLLECTIBLE_ANIMATION_SPEED:
             self.animation_timer = 0

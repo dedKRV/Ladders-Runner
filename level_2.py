@@ -1,7 +1,7 @@
 import arcade
 from core import *
 from entities import Player
-from enemies import Enemy, Bullet, Card
+from enemies import Enemy, Bullet, Card, Money
 from enemy_config import LEVEL_2_ENEMIES, LEVEL_2_SPAWN, ENEMY_Y_OFFSET, LEVEL_2_CARDS
 from control import Controls
 
@@ -79,6 +79,9 @@ class GameWindow2(arcade.Window):
 
         self.play_time = 0.0
 
+        self.money_list = None
+        self.money_collected = 0
+
     def setup(self):
         """Инициализация уровня """
         self.player = Player()
@@ -95,6 +98,8 @@ class GameWindow2(arcade.Window):
         self.enemy_bullets = arcade.SpriteList()
         self.cards_list = arcade.SpriteList()
         self.initial_cards_data = LEVEL_2_CARDS.copy()
+
+        self.money_list = arcade.SpriteList()
 
         self.load_cards()
 
@@ -231,6 +236,51 @@ class GameWindow2(arcade.Window):
         self.update_exit_visibility()
         self.jump_animation_active = False
 
+    def restart_game(self):
+        """Перезапуск уровня"""
+        self.cards_collected = 0
+        self.money_collected = 0
+        self.player_health = PLAYER_MAX_HEALTH
+        self.play_time = 0.0
+        self.game_completed = False
+
+        self.player.center_x = TILE_SIZE * LEVEL_2_SPAWN[0]
+        self.player.center_y = TILE_SIZE * LEVEL_2_SPAWN[1]
+        self.player.change_x = 0
+        self.player.change_y = 0
+
+        self.player.player_bullets.clear()
+        self.enemy_bullets.clear()
+
+        self.cards_list.clear()
+        for card_pos in self.initial_cards_data:
+            x, y = card_pos
+            card = Card(x, y)
+            self.cards_list.append(card)
+
+        if hasattr(self, 'money_list'):
+            self.money_list.clear()
+
+        self.enemies.clear()
+        attack_cooldown, damage = LEVEL_2_ENEMIES
+        for enemy_data in self.initial_enemies_data:
+            enemy = Enemy(
+                enemy_data['x'],
+                enemy_data['y'],
+                attack_cooldown,
+                damage,
+                ENEMY_Y_OFFSET
+            )
+            self.enemies.append(enemy)
+
+        self.update_exit_visibility()
+
+        self.damage_cooldown = 0
+        self.shoot_timer = 0
+        self.jump_animation_active = False
+
+        self.paused = False
+
     def apply_damage(self, damage_amount):
         """Нанесение урона игроку"""
         if self.damage_cooldown <= 0:
@@ -296,6 +346,7 @@ class GameWindow2(arcade.Window):
             print(f"Убито врагов: {killed_enemies}/{len(self.enemies)}")
             print(f"Время: {int(self.play_time)}с")
             print("=" * 50)
+        print(f"Собрано денег: {self.money_collected}")
 
         self.game_completed = True
         self.completion_timer = 1.0
@@ -326,6 +377,12 @@ class GameWindow2(arcade.Window):
                 self.cards_collected += 1
                 self.update_exit_visibility()
 
+        money_hit_list = arcade.check_for_collision_with_list(self.player, self.money_list)
+        for money in money_hit_list:
+            if money in self.money_list:
+                self.money_list.remove(money)
+                self.money_collected += 1
+
         bullets_to_remove = []
         for bullet in self.enemy_bullets:
             wall_hit_list = arcade.check_for_collision_with_list(bullet, self.walls)
@@ -355,6 +412,8 @@ class GameWindow2(arcade.Window):
                 if arcade.check_for_collision(bullet, enemy):
                     player_bullets_to_remove.append(bullet)
                     if enemy.take_damage(bullet.damage):
+                        money = Money(enemy.center_x, enemy.center_y)
+                        self.money_list.append(money)
                         self.enemies.remove(enemy)
                     break
 
@@ -366,7 +425,7 @@ class GameWindow2(arcade.Window):
         """Отрисовка всех объектов"""
         self.clear()
 
-        background_layers = ['background', 'background_2']
+        background_layers = ['background_image', 'background_image_2', 'background', 'background_2']
         for layer_name in background_layers:
             if layer_name in self.tile_map.sprite_lists:
                 self.tile_map.sprite_lists[layer_name].draw()
@@ -392,6 +451,7 @@ class GameWindow2(arcade.Window):
         self.enemies.draw()
         self.enemy_bullets.draw()
         self.cards_list.draw()
+        self.money_list.draw()
 
         if self.visible_animation_layer in self.animation_layer_sprites:
             self.animation_layer_sprites[self.visible_animation_layer].draw()
@@ -477,6 +537,9 @@ class GameWindow2(arcade.Window):
 
         for card in self.cards_list:
             card.update(delta_time)
+
+        for money in self.money_list:
+            money.update(delta_time)
 
         for enemy in self.enemies:
             enemy.update(self.player, delta_time, self.walls)
@@ -629,6 +692,7 @@ class GameWindow2(arcade.Window):
             'player_health': self.player_health,
             'enemies_killed': len(self.get_killed_enemy_indices()),
             'cards_collected': self.cards_collected,
+            'money_collected': self.money_collected,
             'total_cards': self.total_cards,
             'play_time': self.play_time,
             'killed_enemy_indices': self.get_killed_enemy_indices()

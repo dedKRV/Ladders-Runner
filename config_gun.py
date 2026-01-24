@@ -1,6 +1,6 @@
 player = 1  # (1-3)
-gun = 1    # (1-3)
-level = 2 # (1-2)
+gun = 2   # (1-3)
+level = 1 # (1-2)
 
 def get_player_choice():
     """Получить выбор персонажа"""

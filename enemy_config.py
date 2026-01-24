@@ -12,7 +12,7 @@ LEVEL_1_CARDS = [
 ]
 
 # Уровень 2
-LEVEL_2_SPAWN = (10, 10)
+LEVEL_2_SPAWN = (2, 4)
 LEVEL_2_ENEMIES = (2.0, 10)
 LEVEL_2_CARDS = [
 ]
