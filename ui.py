@@ -7,8 +7,6 @@ class MainMenu:
 
     def __init__(self, database):
         self.database = database
-
-        # Загружаем тайлмап для фона меню
         self.menu_map = arcade.load_tilemap("data/menu.tmx", scaling=TILE_SCALING)
         self.background_list = self.menu_map.sprite_lists.get('Слой тайлов 1', arcade.SpriteList())
 
@@ -43,10 +41,8 @@ class MainMenu:
             bold=True
         )
 
-        # Проверяем наличие сохранений
-        from config_gun import get_level_choice
-        current_level = get_level_choice()
-        has_save = self.database.has_save_for_level(current_level)
+        # Проверяем наличие любых сохранений
+        has_save = self.database.has_any_save()
 
         # Надпись RESUME (только если есть сохранение)
         if has_save:
@@ -61,7 +57,7 @@ class MainMenu:
                 font_name=self.font_name
             )
 
-        # Надпись RESTART
+        # Надпись RESTART (всегда показываем)
         arcade.draw_text(
             "RESTART",
             SCREEN_WIDTH / 2,
@@ -75,11 +71,9 @@ class MainMenu:
 
     def check_click(self, x, y):
         """Проверка клика по кнопкам"""
-        from config_gun import get_level_choice
-        current_level = get_level_choice()
-        has_save = self.database.has_save_for_level(current_level)
+        has_save = self.database.has_any_save()
 
-        # Проверка Resume
+        # Проверка Resume (только если есть сохранение)
         if has_save and self._point_in_button(x, y, self.resume_button_y):
             return "resume"
 
@@ -98,7 +92,6 @@ class MainMenu:
 
 class PauseMenu:
     """Меню паузы"""
-
     def __init__(self):
         self.pause_map = arcade.load_tilemap("data/pause.tmx", scaling=TILE_SCALING)
         self.background_list = self.pause_map.sprite_lists.get('Слой тайлов 1', arcade.SpriteList())

@@ -517,8 +517,6 @@ class GameWindow(arcade.Window):
         # Если игра уже завершена
         if self.game_completed:
             self.completion_timer -= delta_time
-            if self.completion_timer <= 0:
-                arcade.close_window()
             return
         self.player.center_x = max(0, min(self.player.center_x, LEVEL_WIDTH)) # создано для того, чтобы персонаж не вылетал за границы
         self.player.center_y = max(0, min(self.player.center_y, LEVEL_HEIGHT))
