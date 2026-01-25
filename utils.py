@@ -2,6 +2,7 @@ from core import *
 import arcade
 import pygame
 from database import GameDatabase
+from ui import GameOverMenu, CompleteMenu
 
 
 class Game(arcade.Window):
@@ -83,6 +84,13 @@ class Game(arcade.Window):
         self.game_started = False
         self.custom_cursor = None
 
+        self.show_game_over = False
+        self.game_over_menu = None
+
+        # Новые атрибуты для меню завершения уровня
+        self.show_complete_menu = False
+        self.complete_menu = None
+
     def setup(self):
         pygame.init()
         self.custom_cursor = arcade.Sprite('assets/ui_textures/8 Cursors/3.png', 1.0)
@@ -92,9 +100,11 @@ class Game(arcade.Window):
         self.load_level(self.current_level_number)
 
         # Инициализируем меню
-        from ui import PauseMenu, MainMenu
+        from ui import PauseMenu, MainMenu, GameOverMenu, CompleteMenu
         self.pause_menu = PauseMenu()
         self.main_menu = MainMenu(self.database)
+        self.game_over_menu = GameOverMenu()
+        self.complete_menu = CompleteMenu()  # Новое меню
 
         # Загружаем настройки из config_gun
         from config_gun import player, gun
@@ -119,6 +129,8 @@ class Game(arcade.Window):
         self.money_collected = 0
         self.player_health = PLAYER_MAX_HEALTH
         self.play_time = 0.0
+        self.show_game_over = False
+        self.show_complete_menu = False  # Сбрасываем флаг complete menu
 
         if level_number == 1:
             from level_1 import GameWindow
@@ -163,18 +175,49 @@ class Game(arcade.Window):
             # Загружаем следующий уровень
             self.load_level(next_level)
             self.game_completed = False
+            self.show_complete_menu = False
             print(f"Переход на уровень {next_level}!")
         else:
             print("Игра пройдена! Поздравляем!")
             self.database.delete_all_saves()
             arcade.close_window()
 
+    def prepare_next_level(self):
+        """Подготовить переход на следующий уровень (сохранить прогресс без загрузки)"""
+        next_level = self.current_level_number + 1
+
+        if next_level <= 2:
+            # Удаляем сохранение текущего уровня
+            self.database.delete_save_for_level(self.current_level_number)
+
+            # Сохраняем информацию о том, что игрок готов к следующему уровню
+            self.database.save_current_level(next_level)
+
+            print(f"Подготовлен переход на уровень {next_level}")
+        else:
+            # Игра полностью пройдена
+            self.database.delete_all_saves()
+            print("Игра полностью пройдена!")
+
     def on_update(self, delta_time):
         if self.show_main_menu:
-            # Обновляем анимацию меню
             if self.main_menu:
                 self.main_menu.update(delta_time)
+            mouse_x = self._mouse_x
+            mouse_y = self._mouse_y
+            self.custom_cursor.center_x = mouse_x
+            self.custom_cursor.center_y = mouse_y
+            return
 
+        # Если показываем меню завершения - обновляем только курсор
+        if self.show_complete_menu:
+            mouse_x = self._mouse_x
+            mouse_y = self._mouse_y
+            self.custom_cursor.center_x = mouse_x
+            self.custom_cursor.center_y = mouse_y
+            return
+
+        if self.paused or self.show_game_over:
             mouse_x = self._mouse_x
             mouse_y = self._mouse_y
             self.custom_cursor.center_x = mouse_x
@@ -186,13 +229,6 @@ class Game(arcade.Window):
             self.paused = not self.paused
             return
 
-        if self.paused:
-            mouse_x = self._mouse_x
-            mouse_y = self._mouse_y
-            self.custom_cursor.center_x = mouse_x
-            self.custom_cursor.center_y = mouse_y
-            return
-
         # Вызываем update уровня
         self.on_update_level(delta_time)
 
@@ -202,8 +238,9 @@ class Game(arcade.Window):
             if self.completion_timer > 0:
                 self.completion_timer -= delta_time
             else:
-                # Переходим на следующий уровень
-                self.switch_to_next_level()
+                # Показываем меню завершения вместо автоматического перехода
+                self.show_complete_menu = True
+                self.complete_menu.set_stars(self.stars_earned)
             return
 
         if self.player:
@@ -228,7 +265,7 @@ class Game(arcade.Window):
                     min(self.camera.position[1], LEVEL_HEIGHT - self.camera.viewport_height / self.camera.zoom / 2)))
 
     def on_close(self):
-        if not self.game_completed and self.game_started:
+        if not self.game_completed and self.game_started and not self.show_game_over:
             save_data = self.get_save_data()
             self.database.save_game(save_data)
         pygame.quit()
@@ -239,6 +276,65 @@ class Game(arcade.Window):
 
         if self.show_main_menu and self.main_menu:
             self.main_menu.draw()
+            self.set_mouse_visible(False)
+            arcade.draw_sprite(self.custom_cursor)
+            return
+
+        # Если показываем меню завершения уровня
+        if self.show_complete_menu and self.complete_menu:
+            # Рисуем игру на фоне (без камеры)
+            saved_position = self.camera.position
+            saved_zoom = self.camera.zoom
+
+            self.camera.position = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+            self.camera.zoom = 1.0
+            self.camera.use()
+
+            self.on_draw_level()
+
+            self.camera.position = saved_position
+            self.camera.zoom = saved_zoom
+
+            # Затемнение
+            arcade.draw_polygon_filled([
+                (0, 0),
+                (SCREEN_WIDTH, 0),
+                (SCREEN_WIDTH, SCREEN_HEIGHT),
+                (0, SCREEN_HEIGHT)
+            ], (0, 0, 0, 180))
+
+            # Меню завершения
+            self.complete_menu.draw()
+
+            self.set_mouse_visible(False)
+            arcade.draw_sprite(self.custom_cursor)
+            return
+
+        if self.show_game_over and self.game_over_menu:
+            # Рисуем игру на фоне
+            saved_position = self.camera.position
+            saved_zoom = self.camera.zoom
+
+            self.camera.position = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+            self.camera.zoom = 1.0
+            self.camera.use()
+
+            self.on_draw_level()
+
+            self.camera.position = saved_position
+            self.camera.zoom = saved_zoom
+
+            # Затемнение
+            arcade.draw_polygon_filled([
+                (0, 0),
+                (SCREEN_WIDTH, 0),
+                (SCREEN_WIDTH, SCREEN_HEIGHT),
+                (0, SCREEN_HEIGHT)
+            ], (0, 0, 0, 180))
+
+            # Меню Game Over
+            self.game_over_menu.draw()
+
             self.set_mouse_visible(False)
             arcade.draw_sprite(self.custom_cursor)
             return
@@ -299,6 +395,43 @@ class Game(arcade.Window):
                 self.game_started = True
             return
 
+        # Обработка кликов в меню завершения уровня
+        if self.show_complete_menu and self.complete_menu:
+            action = self.complete_menu.check_click(x, y)
+
+            if action == "exit":
+                # Выход в главное меню - подготавливаем следующий уровень
+                self.prepare_next_level()
+                self.show_complete_menu = False
+                self.show_main_menu = True
+                self.game_started = False
+            elif action == "continue":
+                # Продолжить - переход на следующий уровень
+                self.show_complete_menu = False
+                self.switch_to_next_level()
+            elif action == "restart":
+                # Перезапуск текущего уровня
+                self.show_complete_menu = False
+                self.restart_game()
+            return
+
+        if self.show_game_over and self.game_over_menu:
+            action = self.game_over_menu.check_click(x, y)
+
+            if action == "exit":
+                # Выход в главное меню - сохраняем текущий прогресс уровня
+                save_data = self.get_save_data()
+                self.database.save_game(save_data)
+
+                self.show_game_over = False
+                self.show_main_menu = True
+                self.game_started = False
+            elif action == "restart":
+                # Перезапуск текущего уровня с начала
+                self.show_game_over = False
+                self.restart_game()
+            return
+
         if self.paused and self.pause_menu:
             action = self.pause_menu.check_click(x, y)
 
@@ -320,18 +453,18 @@ class Game(arcade.Window):
         self.controls.on_mouse_press(x, y, button, modifiers)
 
     def on_mouse_release(self, x, y, button, modifiers):
-        if not self.paused and not self.show_main_menu:
+        if not self.paused and not self.show_main_menu and not self.show_complete_menu:
             self.controls.on_mouse_release(x, y, button, modifiers)
 
     def on_key_press(self, key, modifiers):
-        if not self.paused and not self.show_main_menu:
+        if not self.paused and not self.show_main_menu and not self.show_complete_menu:
             if key == arcade.key.KEY_1:
                 self.player.toggle_weapon()
             else:
                 self.controls.on_key_press(key, modifiers)
 
     def on_key_release(self, key, modifiers):
-        if not self.paused and not self.show_main_menu:
+        if not self.paused and not self.show_main_menu and not self.show_complete_menu:
             self.controls.on_key_release(key, modifiers)
 
 

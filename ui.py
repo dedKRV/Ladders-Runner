@@ -537,6 +537,154 @@ class PauseMenu:
                 hitbox['min_y'] <= y <= hitbox['max_y'])
 
 
-class UI:
+class GameOverMenu:
+    """Меню Game Over"""
+
     def __init__(self):
-        pass
+        self.gameover_map = arcade.load_tilemap("data/gameover.tmx", scaling=TILE_SCALING)
+        self.background_list = self.gameover_map.sprite_lists.get('Слой тайлов 1', arcade.SpriteList())
+
+        # Смещение для выравнивания по центру
+        self.offset_x = 45
+        self.offset_y = 10
+
+        # Кнопка Exit/Menu (слева - стрелка)
+        self.exit_hitbox = {
+            'min_x': 457 + self.offset_x,
+            'max_x': 580 + self.offset_x,
+            'min_y': 195 + self.offset_y,
+            'max_y': 315 + self.offset_y
+        }
+
+        # Кнопка Restart (справа - круговая стрелка)
+        self.restart_hitbox = {
+            'min_x': 682 + self.offset_x,
+            'max_x': 816 + self.offset_x,
+            'min_y': 195 + self.offset_y,
+            'max_y': 315 + self.offset_y
+        }
+
+    def draw(self):
+        """Отрисовка меню Game Over"""
+        # Смещаем все спрайты для центрирования
+        for sprite in self.background_list:
+            sprite.center_x += self.offset_x
+            sprite.center_y += self.offset_y
+
+        # Фон
+        if self.background_list:
+            self.background_list.draw()
+
+        for sprite in self.background_list:
+            sprite.center_x -= self.offset_x
+            sprite.center_y -= self.offset_y
+
+    def check_click(self, x, y):
+        """Проверка клика по кнопкам, возвращает действие"""
+        if self._point_in_hitbox(x, y, self.exit_hitbox):
+            return "exit"
+
+        elif self._point_in_hitbox(x, y, self.restart_hitbox):
+            return "restart"
+
+        return None
+
+    def _point_in_hitbox(self, x, y, hitbox):
+        """Проверка попадания точки в hitbox"""
+        return (hitbox['min_x'] <= x <= hitbox['max_x'] and
+                hitbox['min_y'] <= y <= hitbox['max_y'])
+
+
+class CompleteMenu:
+    """Меню завершения уровня"""
+
+    def __init__(self):
+        self.complete_map = arcade.load_tilemap("data/complete.tmx", scaling=TILE_SCALING)
+
+        # Загружаем слои для разного количества звезд
+        self.complete_layers = {}
+        for stars in [1, 2, 3]:
+            layer_name = f'complete_{stars}'
+            self.complete_layers[stars] = self.complete_map.sprite_lists.get(layer_name, arcade.SpriteList())
+
+        self.background_layer = self.complete_map.sprite_lists.get('background', arcade.SpriteList())
+
+        # Смещение для центрирования (аналогично другим меню)
+        self.offset_x = 0
+        self.offset_y = 0
+
+        # Текущее количество звезд для отображения
+        self.stars = 1
+
+        # Кнопка слева - выход в главное меню
+        self.exit_hitbox = {
+            'min_x': 457 + self.offset_x,
+            'max_x': 580 + self.offset_x,
+            'min_y': 220 + self.offset_y,
+            'max_y': 340 + self.offset_y
+        }
+
+        # Кнопка по центру - продолжить на следующий уровень
+        self.continue_hitbox = {
+            'min_x': 583 + self.offset_x,
+            'max_x': 678 + self.offset_x,
+            'min_y': 210 + self.offset_y,
+            'max_y': 330 + self.offset_y
+        }
+
+        # Кнопка справа - перезапуск уровня
+        self.restart_hitbox = {
+            'min_x': 682 + self.offset_x,
+            'max_x': 816 + self.offset_x,
+            'min_y': 220 + self.offset_y,
+            'max_y': 340 + self.offset_y
+        }
+
+    def set_stars(self, stars):
+        """Установить количество звезд для отображения"""
+        self.stars = max(1, min(3, stars))  # Ограничиваем 1-3
+
+    def draw(self):
+        """Отрисовка меню завершения"""
+        # Смещаем спрайты для центрирования
+        all_sprites = []
+
+        if self.background_layer:
+            all_sprites.extend(self.background_layer)
+
+        if self.stars in self.complete_layers:
+            all_sprites.extend(self.complete_layers[self.stars])
+
+        for sprite in all_sprites:
+            sprite.center_x += self.offset_x
+            sprite.center_y += self.offset_y
+
+        # Рисуем фон и соответствующий слой
+        if self.background_layer:
+            self.background_layer.draw()
+
+        if self.stars in self.complete_layers:
+            self.complete_layers[self.stars].draw()
+
+        # Возвращаем спрайты обратно
+        for sprite in all_sprites:
+            sprite.center_x -= self.offset_x
+            sprite.center_y -= self.offset_y
+
+    def check_click(self, x, y):
+        """Проверка клика по кнопкам"""
+        if self._point_in_hitbox(x, y, self.exit_hitbox):
+            return "exit"
+
+        elif self._point_in_hitbox(x, y, self.continue_hitbox):
+            return "continue"
+
+        elif self._point_in_hitbox(x, y, self.restart_hitbox):
+            return "restart"
+
+        return None
+
+    def _point_in_hitbox(self, x, y, hitbox):
+        """Проверка попадания точки в hitbox"""
+        return (hitbox['min_x'] <= x <= hitbox['max_x'] and
+                hitbox['min_y'] <= y <= hitbox['max_y'])

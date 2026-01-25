@@ -291,13 +291,7 @@ class GameWindow2(arcade.Window):
                 self.player_health = 0
 
             if self.player_health <= 0:
-                self.reset_level_state()
-
-                self.player_health = PLAYER_MAX_HEALTH
-                from enemy_config import LEVEL_2_SPAWN
-                self.player.center_x = TILE_SIZE * LEVEL_2_SPAWN[0]
-                self.player.center_y = TILE_SIZE * LEVEL_2_SPAWN[1]
-
+                self.show_game_over = True
                 self.damage_cooldown = 0
                 self.shoot_timer = 0
 
