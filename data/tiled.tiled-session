@@ -62,23 +62,58 @@
             "dynamicWrapping": false,
             "scaleInDock": 1
         },
-        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx": {
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx": {
             "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 472.6666666666666,
-                "y": 319.33333333333326
+                "x": 371.33333333333337,
+                "y": 435.33333333333326
             }
+        },
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#ButtonMap1": {
+            "scaleInDock": 1
+        },
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#ButtonMap7": {
+            "scaleInDock": 1
+        },
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#Interface windows": {
+            "scaleInDock": 1
+        },
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#Logo2": {
+            "scaleInDock": 1
+        },
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#Пауза в игре_ уровень 2-4": {
+            "scaleInDock": 1
+        },
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#кнопочки": {
+            "scaleInDock": 1
+        },
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#ф": {
+            "scaleInDock": 1
+        },
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 525,
+                "y": 263
+            }
+        },
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#ButtonMap1": {
+            "scaleInDock": 1
         },
         "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#ButtonMap7": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.33
+            "scaleInDock": 1
         },
         "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#Interface windows": {
             "scaleInDock": 0.33
         },
         "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#Logo2": {
             "scaleInDock": 0.33
+        },
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#Logo3": {
+            "scaleInDock": 1
         },
         "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#Пауза в игре_ уровень 2-4": {
             "dynamicWrapping": false,
@@ -87,6 +122,11 @@
         "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#кнопочки": {
             "dynamicWrapping": true,
             "scaleInDock": 0.33
+        },
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#ф": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "C:/Users/rioni/PycharmProjects/Project/assets/tilesets/1.tsx": {
             "scaleInDock": 1
@@ -112,10 +152,12 @@
         },
         "C:/Users/rioni/PycharmProjects/Project/assets/tilesets/Transporter.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "C:/Users/rioni/PycharmProjects/Project/assets/tilesets/background.tsx": {
-            "dynamicWrapping": true
+            "dynamicWrapping": true,
+            "scaleInDock": 0.0444
         },
         "D:/Project/assets/tilesets/1.tsx": {
             "dynamicWrapping": false,
@@ -171,9 +213,6 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
-        "D:/Project/assets/tilesets/background.tsx": {
-            "dynamicWrapping": true
-        },
         "D:/Project/assets/tilesets/set.tsx": {
             "scaleInDock": 2,
             "scaleInEditor": 1.5
@@ -226,29 +265,21 @@
             "scale": 1,
             "selectedLayer": 9,
             "viewCenter": {
-                "x": 640.5,
-                "y": 366
-            }
-        },
-        "level_2.tmx": {
-            "scale": 0.7963671874999999,
-            "selectedLayer": 0,
-            "viewCenter": {
-                "x": 608.3876980428706,
-                "y": 344.06239270123126
+                "x": 646,
+                "y": 585
             }
         },
         "pause.tmx": {
             "expandedObjectLayers": [
                 2,
-                3,
-                4
+                4,
+                3
             ],
             "scale": 0.75,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 607.3333333333333,
-                "y": 302.66666666666663
+                "x": 480,
+                "y": 130.66666666666669
             }
         },
         "pause.tmx#паузкааааааааааа": {
@@ -264,31 +295,31 @@
         }
     },
     "last.externalTilesetPath": "C:/Users/rioni/OneDrive/Desktop/Новая папка (2)/3 Icons/Buttons2",
-    "last.imagePath": "C:/Users/rioni/OneDrive/Desktop",
-    "map.height": 20,
+    "last.imagePath": "C:/Users/rioni/PycharmProjects/Project/assets/ui_textures/5 Logo",
+    "map.height": 23,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 32,
     "map.tileWidth": 32,
-    "map.width": 30,
+    "map.width": 40,
     "openFiles": [
         "level_1.tmx",
-        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx",
-        "pause.tmx"
+        "pause.tmx",
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx"
     ],
     "project": "tiled.tiled-project",
     "recentFiles": [
-        "pause.tmx",
         "level_1.tmx",
+        "pause.tmx",
         "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx",
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx",
+        "C:/Users/rioni/PycharmProjects/Project/assets/tilesets/Transporter.tsx",
         "D:/Project/assets/tilesets/1.tsx",
         "D:/Project/assets/tilesets/2.tsx",
         "D:/Project/assets/tilesets/3.tsx",
         "D:/Project/assets/tilesets/4.tsx",
         "D:/Project/assets/tilesets/5.tsx",
         "D:/Project/assets/tilesets/6.tsx",
-        "D:/Project/assets/tilesets/Saw.tsx",
-        "D:/Project/assets/tilesets/Hammer.tsx",
-        "D:/Project/assets/tilesets/Platform.tsx"
+        "D:/Project/assets/tilesets/Saw.tsx"
     ],
     "tileset.embedInMap": true,
     "tileset.lastUsedFilter": "Все файлы (*)",
