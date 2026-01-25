@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.2" name="background" tilewidth="1800" tileheight="1200" tilecount="39" columns="0">
+<tileset version="1.10" tiledversion="1.11.2" name="background" tilewidth="1800" tileheight="1200" tilecount="41" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image source="2/2 Background/Background.png" width="576" height="324"/>
@@ -117,5 +117,11 @@
  </tile>
  <tile id="38">
   <image source="8/3 Background/Day/Background.png" width="576" height="324"/>
+ </tile>
+ <tile id="39">
+  <image source="4/2 Background/Overlay.png" width="1280" height="853"/>
+ </tile>
+ <tile id="40">
+  <image source="6/2 Background/Overlay_illumination.png" width="1280" height="853"/>
  </tile>
 </tileset>

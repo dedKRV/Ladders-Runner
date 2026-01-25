@@ -96,6 +96,11 @@ class Game(arcade.Window):
         self.pause_menu = PauseMenu()
         self.main_menu = MainMenu(self.database)
 
+        # Загружаем настройки из config_gun
+        from config_gun import player, gun
+        self.selected_player = player
+        self.selected_gun = gun
+
         if self.database.has_any_save():
             self.show_main_menu = True
             self.game_started = False
@@ -166,6 +171,10 @@ class Game(arcade.Window):
 
     def on_update(self, delta_time):
         if self.show_main_menu:
+            # Обновляем анимацию меню
+            if self.main_menu:
+                self.main_menu.update(delta_time)
+
             mouse_x = self._mouse_x
             mouse_y = self._mouse_y
             self.custom_cursor.center_x = mouse_x

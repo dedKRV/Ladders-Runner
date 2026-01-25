@@ -54,11 +54,11 @@ class Weapon:
                 self.idle_texture = arcade.load_texture(f"{base_path}Cyborg_gun_1/Cyborg_gun_1.png")
                 self.shoot_texture = arcade.load_texture(f"{base_path}Cyborg_gun_1/Cyborg_gun_2.png")
             elif self.weapon_type == "2":
-                self.idle_texture = arcade.load_texture(f"{base_path}Cyborg_gun_1/Cyborg_gun_1.png")
-                self.shoot_texture = arcade.load_texture(f"{base_path}Cyborg_gun_1/Cyborg_gun_2.png")
+                self.idle_texture = arcade.load_texture(f"{base_path}Cyborg_gun_2/Cyborg_gun_1.png")
+                self.shoot_texture = arcade.load_texture(f"{base_path}Cyborg_gun_2/Cyborg_gun_2.png")
             elif self.weapon_type == "3":
-                self.idle_texture = arcade.load_texture(f"{base_path}Cyborg_gun_1/Cyborg_gun_1.png")
-                self.shoot_texture = arcade.load_texture(f"{base_path}Cyborg_gun_1/Cyborg_gun_2.png")
+                self.idle_texture = arcade.load_texture(f"{base_path}Cyborg_gun_3/Cyborg_gun_1.png")
+                self.shoot_texture = arcade.load_texture(f"{base_path}Cyborg_gun_3/Cyborg_gun_2.png")
 
         if self.idle_texture:
             self.idle_texture_flipped = self.idle_texture.flip_left_right()

@@ -3,14 +3,14 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "C:/Project/data/menu.tmx",
+    "activeFile": "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx",
     "expandedProjectPaths": [
         "."
     ],
     "fileStates": {
         "": {
-            "scaleInDock": 0.5,
-            "scaleInEditor": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 0.75
         },
         "#11": {
             "dynamicWrapping": false
@@ -45,6 +45,16 @@
         "#Снимок экрана 2026-01-21 012847": {
             "dynamicWrapping": false
         },
+        "#кнопочки": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1
+        },
+        "#нв": {
+            "dynamicWrapping": true
+        },
+        "#неа": {
+            "scaleInEditor": 1
+        },
         "#паузкааааааааааа": {
             "dynamicWrapping": false
         },
@@ -52,7 +62,7 @@
             "dynamicWrapping": false,
             "scaleInDock": 1
         },
-        "C:/Project/data/menu.tmx": {
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx": {
             "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
@@ -60,28 +70,28 @@
                 "y": 435.33333333333326
             }
         },
-        "C:/Project/data/menu.tmx#ButtonMap1": {
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#ButtonMap1": {
             "scaleInDock": 1
         },
-        "C:/Project/data/menu.tmx#ButtonMap7": {
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#ButtonMap7": {
             "scaleInDock": 1
         },
-        "C:/Project/data/menu.tmx#Interface windows": {
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#Interface windows": {
             "scaleInDock": 1
         },
-        "C:/Project/data/menu.tmx#Logo2": {
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#Logo2": {
             "scaleInDock": 1
         },
-        "C:/Project/data/menu.tmx#Пауза в игре_ уровень 2-4": {
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#Пауза в игре_ уровень 2-4": {
             "scaleInDock": 1
         },
-        "C:/Project/data/menu.tmx#кнопочки": {
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#кнопочки": {
             "scaleInDock": 1
         },
-        "C:/Project/data/menu.tmx#ф": {
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx#ф": {
             "scaleInDock": 1
         },
-        "C:/Project/data/menu.tmx": {
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx": {
             "scale": 0.5,
             "selectedLayer": 0,
             "viewCenter": {
@@ -89,63 +99,63 @@
                 "y": 263
             }
         },
-        "C:/Project/data/menu.tmx#ButtonMap1": {
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#ButtonMap1": {
             "scaleInDock": 1
         },
-        "C:/Project/data/menu.tmx#ButtonMap7": {
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#ButtonMap7": {
             "dynamicWrapping": false,
             "scaleInDock": 1
         },
-        "C:/Project/data/menu.tmx#Interface windows": {
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#Interface windows": {
             "scaleInDock": 0.33
         },
-        "C:/Project/data/menu.tmx#Logo2": {
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#Logo2": {
             "scaleInDock": 0.33
         },
-        "C:/Project/data/menu.tmx#Logo3": {
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#Logo3": {
             "scaleInDock": 1
         },
-        "C:/Project/data/menu.tmx#Пауза в игре_ уровень 2-4": {
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#Пауза в игре_ уровень 2-4": {
             "dynamicWrapping": false,
             "scaleInDock": 0.33
         },
-        "C:/Project/data/menu.tmx#кнопочки": {
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#кнопочки": {
             "dynamicWrapping": true,
             "scaleInDock": 0.33
         },
-        "C:/Project/data/menu.tmx#ф": {
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx#ф": {
             "dynamicWrapping": true,
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
-        "C:/Project/assets/tilesets/1.tsx": {
+        "C:/Users/rioni/PycharmProjects/Project/assets/tilesets/1.tsx": {
             "scaleInDock": 1
         },
-        "C:/Project/assets/tilesets/2.tsx": {
+        "C:/Users/rioni/PycharmProjects/Project/assets/tilesets/2.tsx": {
             "dynamicWrapping": true,
             "scaleInDock": 1
         },
-        "C:/Project/assets/tilesets/6.tsx": {
+        "C:/Users/rioni/PycharmProjects/Project/assets/tilesets/6.tsx": {
             "dynamicWrapping": true,
             "scaleInDock": 0.25
         },
-        "C:/Project/assets/tilesets/Entry.tsx": {
+        "C:/Users/rioni/PycharmProjects/Project/assets/tilesets/Entry.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1
         },
-        "C:/Project/assets/tilesets/Generator.tsx": {
+        "C:/Users/rioni/PycharmProjects/Project/assets/tilesets/Generator.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1
         },
-        "C:/Project/assets/tilesets/Saw.tsx": {
+        "C:/Users/rioni/PycharmProjects/Project/assets/tilesets/Saw.tsx": {
             "scaleInDock": 1
         },
-        "C:/Project/assets/tilesets/Transporter.tsx": {
+        "C:/Users/rioni/PycharmProjects/Project/assets/tilesets/Transporter.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
-        "C:/Project/assets/tilesets/background.tsx": {
+        "C:/Users/rioni/PycharmProjects/Project/assets/tilesets/background.tsx": {
             "dynamicWrapping": true,
             "scaleInDock": 0.0444
         },
@@ -182,6 +192,7 @@
             "scaleInEditor": 1
         },
         "D:/Project/assets/tilesets/Generator.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
@@ -202,6 +213,12 @@
         "D:/Project/assets/tilesets/Transporter.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "D:/Project/assets/tilesets/background.tsx": {
+            "dynamicWrapping": true
+        },
+        "D:/Project/assets/tilesets/frames.tsx": {
+            "dynamicWrapping": true
         },
         "D:/Project/assets/tilesets/set.tsx": {
             "scaleInDock": 2,
@@ -255,24 +272,65 @@
             "scale": 1,
             "selectedLayer": 9,
             "viewCenter": {
-                "x": 646,
-                "y": 585
+                "x": 682.5,
+                "y": 373
             }
+        },
+        "menu.tmx": {
+            "scale": 1,
+            "selectedLayer": 26,
+            "viewCenter": {
+                "x": 525.5,
+                "y": 291
+            }
+        },
+        "menu.tmx#ButtonMap1": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "menu.tmx#ButtonMap7": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "menu.tmx#Interface windows": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "menu.tmx#Logo3": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "menu.tmx#decor": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "menu.tmx#logotipsen": {
+            "dynamicWrapping": false
+        },
+        "menu.tmx#particles": {
+            "dynamicWrapping": true
+        },
+        "menu.tmx#players": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1
         },
         "pause.tmx": {
             "expandedObjectLayers": [
-                2,
                 4,
-                3
+                3,
+                2
             ],
-            "scale": 0.75,
+            "scale": 0.33,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 480,
-                "y": 130.66666666666669
+                "x": 568.1818181818182,
+                "y": 796.9696969696968
             }
         },
         "pause.tmx#паузкааааааааааа": {
+            "dynamicWrapping": false,
             "scaleInDock": 0.5
         },
         "tilets_1.tsx": {
@@ -284,8 +342,8 @@
             "scaleInEditor": 1
         }
     },
-    "last.externalTilesetPath": "C:/Project/data/Новая папка (2)/3 Icons/Buttons2",
-    "last.imagePath": "C:/Users/rioni/PycharmProjects/Project/assets/ui_textures/5 Logo",
+    "last.externalTilesetPath": "C:/Users/rioni/OneDrive/Desktop/Новая папка (2)/3 Icons/Buttons2",
+    "last.imagePath": "D:/Project/assets/sprites/Particles/3 Sparks/8_c",
     "map.height": 23,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 32,
@@ -294,15 +352,15 @@
     "openFiles": [
         "level_1.tmx",
         "pause.tmx",
-        "C:/Project/data/menu.tmx"
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx"
     ],
     "project": "tiled.tiled-project",
     "recentFiles": [
         "level_1.tmx",
         "pause.tmx",
-        "C:/Project/data/menu.tmx",
-        "C:/Project/data/menu.tmx",
-        "C:/Project/assets/tilesets/Transporter.tsx",
+        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx",
+        "C:/Users/rioni/OneDrive/Desktop/menu.tmx",
+        "C:/Users/rioni/PycharmProjects/Project/assets/tilesets/Transporter.tsx",
         "D:/Project/assets/tilesets/1.tsx",
         "D:/Project/assets/tilesets/2.tsx",
         "D:/Project/assets/tilesets/3.tsx",
@@ -320,5 +378,5 @@
         "height": 32,
         "width": 32
     },
-    "tileset.type": 0
+    "tileset.type": 1
 }
