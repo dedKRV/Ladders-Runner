@@ -157,6 +157,11 @@ class Game(arcade.Window):
         self.load_enemies_from_spawn_points = GameWindow.load_enemies_from_spawn_points.__get__(self, Game)
         self.save_initial_enemies_state = GameWindow.save_initial_enemies_state.__get__(self, Game)
         self.get_killed_enemy_indices = GameWindow.get_killed_enemy_indices.__get__(self, Game)
+        self.get_level_number = GameWindow.get_level_number.__get__(self, Game)
+        self.get_tilemap_path = GameWindow.get_tilemap_path.__get__(self, Game)
+        self.get_spawn_position = GameWindow.get_spawn_position.__get__(self, Game)
+        self.get_enemy_config = GameWindow.get_enemy_config.__get__(self, Game)
+        self.get_cards_config = GameWindow.get_cards_config.__get__(self, Game)
 
         # Вызываем setup уровня
         self.setup_level()
@@ -194,13 +199,14 @@ class Game(arcade.Window):
             self.database.save_current_level(next_level)
 
             # Создаем начальное сохранение для следующего уровня
-            # чтобы кнопка Resume была активна
             from config_gun import PLAYER_CHOICE, WEAPON_CHOICE
-            from enemy_config import LEVEL_1_SPAWN, LEVEL_2_SPAWN
 
+            # Получаем spawn позицию для следующего уровня
             if next_level == 1:
+                from enemy_config import LEVEL_1_SPAWN
                 spawn_x, spawn_y = LEVEL_1_SPAWN
             elif next_level == 2:
+                from enemy_config import LEVEL_2_SPAWN
                 spawn_x, spawn_y = LEVEL_2_SPAWN
             else:
                 spawn_x, spawn_y = 3, 17
