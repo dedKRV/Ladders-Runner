@@ -688,3 +688,377 @@ class CompleteMenu:
         """Проверка попадания точки в hitbox"""
         return (hitbox['min_x'] <= x <= hitbox['max_x'] and
                 hitbox['min_y'] <= y <= hitbox['max_y'])
+
+
+class GameHUD:
+
+    def __init__(self, tilemap_path="data/interface.tmx"):
+        self.tilemap = arcade.load_tilemap(tilemap_path, scaling=TILE_SCALING)
+
+        self.heart_good_layers = {}
+        self.heart_not_good_layers = {}
+        self.heart_not_good_anim_layers = {}
+        self.heart_anim_one_layers = {}
+        self.heart_anim_two_layers = {}
+
+        self.skull_anim_one_layers = {}
+        self.skull_anim_two_layers = {}
+        self.skull_anim_three_layers = {}
+
+        self.dollars_layers = {}
+        self.dollars_anim_layers = {}
+
+        self.cards_layers = {}
+        self.cards_anim_layers = {}
+
+        self.blood_layer = None
+
+        self._load_all_hud_layers()
+
+        self.current_health = PLAYER_MAX_HEALTH
+        self.max_health = PLAYER_MAX_HEALTH
+        self.hearts_state = [10] * 10
+        self.active_hearts = 10
+        self.heart_animations = []
+
+        self.killed_enemies = 0
+        self.max_enemies = 10
+        self.skull_animations = []
+
+        self.money_collected = 0
+        self.max_money = 10
+        self.money_animations = []
+
+        self.cards_collected = 0
+        self.max_cards = 10
+        self.card_animations = []
+
+        self.blood_timer = 0
+        self.show_blood = False
+
+    def _load_all_hud_layers(self):
+        for i in range(1, 11):
+            layer_name = f'heart_good_{i}'
+            self.heart_good_layers[i] = self.tilemap.sprite_lists.get(layer_name, arcade.SpriteList())
+
+            layer_name = f'heart_not_good_{i}'
+            self.heart_not_good_layers[i] = self.tilemap.sprite_lists.get(layer_name, arcade.SpriteList())
+
+            layer_name = f'heart_not_good_anim_{i}'
+            self.heart_not_good_anim_layers[i] = self.tilemap.sprite_lists.get(layer_name, arcade.SpriteList())
+
+            layer_name = f'heart_anim_one_{i}'
+            self.heart_anim_one_layers[i] = self.tilemap.sprite_lists.get(layer_name, arcade.SpriteList())
+
+            layer_name = f'heart_anim_two_{i}'
+            self.heart_anim_two_layers[i] = self.tilemap.sprite_lists.get(layer_name, arcade.SpriteList())
+
+        for i in range(1, 11):
+            layer_name = f'skull_anim_one_{i}'
+            self.skull_anim_one_layers[i] = self.tilemap.sprite_lists.get(layer_name, arcade.SpriteList())
+
+            layer_name = f'skull_anim_two_{i}'
+            self.skull_anim_two_layers[i] = self.tilemap.sprite_lists.get(layer_name, arcade.SpriteList())
+
+            layer_name = f'skull_anim_three_{i}'
+            self.skull_anim_three_layers[i] = self.tilemap.sprite_lists.get(layer_name, arcade.SpriteList())
+
+        for i in range(1, 11):
+            layer_name = f'dollars_{i}'
+            self.dollars_layers[i] = self.tilemap.sprite_lists.get(layer_name, arcade.SpriteList())
+
+            layer_name = f'dollars_anim_{i}'
+            self.dollars_anim_layers[i] = self.tilemap.sprite_lists.get(layer_name, arcade.SpriteList())
+
+        for i in range(1, 11):
+            layer_name = f'card_{i}'
+            self.cards_layers[i] = self.tilemap.sprite_lists.get(layer_name, arcade.SpriteList())
+
+            layer_name = f'card_anim_{i}'
+            self.cards_anim_layers[i] = self.tilemap.sprite_lists.get(layer_name, arcade.SpriteList())
+
+        self.blood_layer = self.tilemap.sprite_lists.get('blood', arcade.SpriteList())
+
+    def set_health(self, health):
+        old_health = self.current_health
+        self.current_health = max(0, min(health, self.max_health))
+
+        health_diff = old_health - self.current_health
+
+        if health_diff > 0:
+            self._process_health_loss(health_diff)
+
+    def _process_health_loss(self, damage):
+        damage_remaining = damage
+
+        for i in range(self.active_hearts - 1, -1, -1):
+            if damage_remaining <= 0:
+                break
+
+            heart_index = i + 1
+
+            if self.hearts_state[i] == 10:
+                if damage_remaining >= 10:
+                    self.hearts_state[i] = 0
+                    self.heart_animations.append({
+                        'index': heart_index,
+                        'stage': 1,
+                        'timer': 0
+                    })
+                    damage_remaining -= 10
+                    self.active_hearts -= 1
+                elif damage_remaining >= 5:
+                    self.hearts_state[i] = 5
+                    self.heart_animations.append({
+                        'index': heart_index,
+                        'type': 'not_good',
+                        'timer': HEART_NOT_GOOD_ANIM_DURATION
+                    })
+                    damage_remaining -= 5
+            elif self.hearts_state[i] == 5:
+                self.hearts_state[i] = 0
+                self.heart_animations.append({
+                    'index': heart_index,
+                    'stage': 1,
+                    'timer': 0
+                })
+                damage_remaining -= 5
+                self.active_hearts -= 1
+
+    def add_kill(self):
+        if self.killed_enemies < self.max_enemies:
+            skull_index = self.killed_enemies + 1
+            self.killed_enemies += 1
+
+            self.skull_animations.append({
+                'index': skull_index,
+                'stage': 3,
+                'timer': 0
+            })
+
+    def add_money(self):
+        if self.money_collected < self.max_money:
+            money_index = self.money_collected + 1
+            self.money_collected += 1
+
+            self.money_animations.append({
+                'index': money_index,
+                'stage': 1,
+                'timer': 0
+            })
+
+    def add_card(self):
+        if self.cards_collected < self.max_cards:
+            card_index = self.cards_collected + 1
+            self.cards_collected += 1
+
+            self.card_animations.append({
+                'index': card_index,
+                'stage': 1,
+                'timer': 0
+            })
+
+    def show_blood_animation(self):
+        self.show_blood = True
+        self.blood_timer = BLOOD_ANIM_DURATION
+
+    def update(self, delta_time):
+        updated_heart_animations = []
+        for anim in self.heart_animations:
+            if 'type' in anim and anim['type'] == 'not_good':
+                anim['timer'] -= delta_time
+                if anim['timer'] > 0:
+                    updated_heart_animations.append(anim)
+            else:
+                anim['timer'] += delta_time
+                if anim['stage'] == 1 and anim['timer'] < HEART_ANIM_ONE_DURATION:
+                    updated_heart_animations.append(anim)
+                elif anim['stage'] == 1 and anim['timer'] >= HEART_ANIM_ONE_DURATION:
+                    anim['stage'] = 2
+                    anim['timer'] = 0
+                    updated_heart_animations.append(anim)
+                elif anim['stage'] == 2 and anim['timer'] < HEART_ANIM_TWO_DURATION:
+                    updated_heart_animations.append(anim)
+        self.heart_animations = updated_heart_animations
+
+        updated_skull_animations = []
+        for anim in self.skull_animations:
+            anim['timer'] += delta_time
+
+            if anim['stage'] == 3 and anim['timer'] < SKULL_ANIM_THREE_DURATION:
+                updated_skull_animations.append(anim)
+            elif anim['stage'] == 3 and anim['timer'] >= SKULL_ANIM_THREE_DURATION:
+                anim['stage'] = 2
+                anim['timer'] = 0
+                updated_skull_animations.append(anim)
+            elif anim['stage'] == 2 and anim['timer'] < SKULL_ANIM_TWO_DURATION:
+                updated_skull_animations.append(anim)
+            elif anim['stage'] == 2 and anim['timer'] >= SKULL_ANIM_TWO_DURATION:
+                anim['stage'] = 1
+        self.skull_animations = updated_skull_animations
+
+        updated_money_animations = []
+        for anim in self.money_animations:
+            anim['timer'] += delta_time
+
+            if anim['stage'] == 1 and anim['timer'] < DOLLAR_ANIM_DURATION:
+                updated_money_animations.append(anim)
+            elif anim['stage'] == 1 and anim['timer'] >= DOLLAR_ANIM_DURATION:
+                anim['stage'] = 2
+        self.money_animations = updated_money_animations
+
+        updated_card_animations = []
+        for anim in self.card_animations:
+            anim['timer'] += delta_time
+
+            if anim['stage'] == 1 and anim['timer'] < CARD_ANIM_DURATION:
+                updated_card_animations.append(anim)
+            elif anim['stage'] == 1 and anim['timer'] >= CARD_ANIM_DURATION:
+                anim['stage'] = 2
+        self.card_animations = updated_card_animations
+
+        if self.show_blood:
+            self.blood_timer -= delta_time
+            if self.blood_timer <= 0:
+                self.show_blood = False
+
+    def draw(self):
+        self._draw_health()
+        self._draw_skulls()
+        self._draw_money()
+        self._draw_cards()
+
+        if self.show_blood and self.blood_layer:
+            self.blood_layer.draw()
+
+    def _draw_health(self):
+        for i in range(10):
+            heart_index = i + 1
+            heart_state = self.hearts_state[i] if i < len(self.hearts_state) else 0
+
+            active_anim = None
+            for anim in self.heart_animations:
+                if anim['index'] == heart_index:
+                    active_anim = anim
+                    break
+
+            current_layer = None
+
+            if active_anim:
+                if 'type' in active_anim and active_anim['type'] == 'not_good':
+                    if heart_index in self.heart_not_good_anim_layers:
+                        current_layer = self.heart_not_good_anim_layers[heart_index]
+                elif active_anim['stage'] == 1:
+                    if heart_index in self.heart_anim_one_layers:
+                        current_layer = self.heart_anim_one_layers[heart_index]
+                elif active_anim['stage'] == 2:
+                    if heart_index in self.heart_anim_two_layers:
+                        current_layer = self.heart_anim_two_layers[heart_index]
+            elif heart_state == 10:
+                if heart_index in self.heart_good_layers:
+                    current_layer = self.heart_good_layers[heart_index]
+            elif heart_state == 5:
+                if heart_index in self.heart_not_good_layers:
+                    current_layer = self.heart_not_good_layers[heart_index]
+
+            if current_layer:
+                current_layer.draw()
+
+    def _draw_skulls(self):
+        for i in range(self.killed_enemies):
+            skull_index = i + 1
+
+            active_anim = None
+            for anim in self.skull_animations:
+                if anim['index'] == skull_index:
+                    active_anim = anim
+                    break
+
+            current_layer = None
+
+            if active_anim:
+                if active_anim['stage'] == 3:
+                    if skull_index in self.skull_anim_three_layers:
+                        current_layer = self.skull_anim_three_layers[skull_index]
+                elif active_anim['stage'] == 2:
+                    if skull_index in self.skull_anim_two_layers:
+                        current_layer = self.skull_anim_two_layers[skull_index]
+                elif active_anim['stage'] == 1:
+                    if skull_index in self.skull_anim_one_layers:
+                        current_layer = self.skull_anim_one_layers[skull_index]
+            else:
+                if skull_index in self.skull_anim_one_layers:
+                    current_layer = self.skull_anim_one_layers[skull_index]
+
+            if current_layer:
+                current_layer.draw()
+
+    def _draw_money(self):
+        for i in range(self.money_collected):
+            money_index = i + 1
+
+            active_anim = None
+            for anim in self.money_animations:
+                if anim['index'] == money_index:
+                    active_anim = anim
+                    break
+
+            current_layer = None
+
+            if active_anim:
+                if active_anim['stage'] == 1:
+                    if money_index in self.dollars_anim_layers:
+                        current_layer = self.dollars_anim_layers[money_index]
+                elif active_anim['stage'] == 2:
+                    if money_index in self.dollars_layers:
+                        current_layer = self.dollars_layers[money_index]
+            else:
+                if money_index in self.dollars_layers:
+                    current_layer = self.dollars_layers[money_index]
+
+            if current_layer:
+                current_layer.draw()
+
+    def _draw_cards(self):
+        for i in range(self.cards_collected):
+            card_index = i + 1
+
+            active_anim = None
+            for anim in self.card_animations:
+                if anim['index'] == card_index:
+                    active_anim = anim
+                    break
+
+            current_layer = None
+
+            if active_anim:
+                if active_anim['stage'] == 1:
+                    if card_index in self.cards_anim_layers:
+                        current_layer = self.cards_anim_layers[card_index]
+                elif active_anim['stage'] == 2:
+                    if card_index in self.cards_layers:
+                        current_layer = self.cards_layers[card_index]
+            else:
+                if card_index in self.cards_layers:
+                    current_layer = self.cards_layers[card_index]
+
+            if current_layer:
+                current_layer.draw()
+
+    def reset(self):
+        self.current_health = PLAYER_MAX_HEALTH
+        self.hearts_state = [10] * 10
+        self.active_hearts = 10
+        self.heart_animations = []
+
+        self.killed_enemies = 0
+        self.skull_animations = []
+
+        self.money_collected = 0
+        self.money_animations = []
+
+        self.cards_collected = 0
+        self.card_animations = []
+
+        self.blood_timer = 0
+        self.show_blood = False

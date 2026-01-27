@@ -43,6 +43,9 @@ class Game(arcade.Window):
         self.is_jumping = False
         self.is_climbing = False
 
+        from ui import GameHUD
+        self.game_hud = GameHUD()
+
         self.animation_timer = 0
         self.current_animation_frame = 0
         self.jump_animation_timer = 0
@@ -171,12 +174,11 @@ class Game(arcade.Window):
         next_level = self.current_level_number + 1
 
         if next_level <= 2:
+            # Сбрасываем HUD перед загрузкой нового уровня
+            self.game_hud.reset()
             # Удаляем сохранение предыдущего уровня
             self.database.delete_save_for_level(self.current_level_number)
-
-            # Сохраняем прогресс на следующий уровень
             self.database.save_current_level(next_level)
-
             # Загружаем следующий уровень
             self.load_level(next_level)
             self.game_completed = False
@@ -190,6 +192,10 @@ class Game(arcade.Window):
     def prepare_next_level(self):
         """Подготовить переход на следующий уровень (создать начальное сохранение)"""
         next_level = self.current_level_number + 1
+
+        if next_level <= 2:
+            # Сбрасываем HUD
+            self.game_hud.reset()
 
         if next_level <= 2:
             # Удаляем сохранение текущего уровня
@@ -244,6 +250,9 @@ class Game(arcade.Window):
             self.custom_cursor.center_x = mouse_x
             self.custom_cursor.center_y = mouse_y
             return
+
+        self.game_hud.update(delta_time)
+        self.game_hud.set_health(self.player_health)
 
         # Если показываем меню завершения - обновляем только курсор
         if self.show_complete_menu:
@@ -318,7 +327,7 @@ class Game(arcade.Window):
 
         # Если показываем меню завершения уровня
         if self.show_complete_menu and self.complete_menu:
-            # Рисуем игру на фоне (без камеры)
+            # Рисуем игру на фоне
             saved_position = self.camera.position
             saved_zoom = self.camera.zoom
 
@@ -403,6 +412,17 @@ class Game(arcade.Window):
         else:
             self.camera.use()
             self.on_draw_level()
+            # Рисуем HUD поверх игры
+            saved_position = self.camera.position
+            saved_zoom = self.camera.zoom
+            self.camera.position = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+            self.camera.zoom = 1.0
+            self.camera.use()
+            # Рисуем полный HUD
+            self.game_hud.draw()
+            self.camera.position = saved_position
+            self.camera.zoom = saved_zoom
+            self.camera.use()
             self.set_mouse_visible(False)
             arcade.draw_sprite(self.custom_cursor)
 

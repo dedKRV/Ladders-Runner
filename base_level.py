@@ -256,6 +256,8 @@ class BaseLevel(arcade.Window):
         self.play_time = 0.0
         self.game_completed = False
 
+        self.game_hud.reset()
+
         self.player.center_x = TILE_SIZE * spawn_x
         self.player.center_y = TILE_SIZE * spawn_y
         self.player.change_x = 0
@@ -300,6 +302,9 @@ class BaseLevel(arcade.Window):
         if self.damage_cooldown <= 0:
             self.player_health -= damage_amount
             self.damage_cooldown = self.DAMAGE_COOLDOWN_TIME
+
+            if self.game_hud:
+                self.game_hud.show_blood_animation()
 
             if self.player_health < 0:
                 self.player_health = 0
@@ -385,6 +390,7 @@ class BaseLevel(arcade.Window):
             if card in self.cards_list:
                 self.cards_list.remove(card)
                 self.cards_collected += 1
+                self.game_hud.add_card()
                 self.update_exit_visibility()
 
         money_hit_list = arcade.check_for_collision_with_list(self.player, self.money_list)
@@ -392,6 +398,7 @@ class BaseLevel(arcade.Window):
             if money in self.money_list:
                 self.money_list.remove(money)
                 self.money_collected += 1
+                self.game_hud.add_money()
 
         bullets_to_remove = []
         for bullet in self.enemy_bullets:
@@ -425,6 +432,7 @@ class BaseLevel(arcade.Window):
                         money = Money(enemy.center_x, enemy.center_y)
                         self.money_list.append(money)
                         self.enemies.remove(enemy)
+                        self.game_hud.add_kill()
                     break
 
         for bullet in player_bullets_to_remove:
@@ -474,38 +482,6 @@ class BaseLevel(arcade.Window):
 
         minutes = int(self.play_time // 60)
         seconds = int(self.play_time % 60)
-        time_text = f"Время: {minutes:02d}:{seconds:02d}"
-        arcade.draw_text(
-            time_text,
-            10,
-            SCREEN_HEIGHT - 90,
-            UI_TEXT_COLOR,
-            UI_FONT_SIZE,
-            font_name=UI_FONT_NAME,
-            bold=True
-        )
-
-        health_text = f"Здоровье: {self.player_health}/{PLAYER_MAX_HEALTH}"
-        arcade.draw_text(
-            health_text,
-            10,
-            SCREEN_HEIGHT - 30,
-            UI_TEXT_COLOR,
-            UI_FONT_SIZE,
-            font_name=UI_FONT_NAME,
-            bold=True
-        )
-
-        cards_text = f"Карты: {self.cards_collected}/{self.total_cards}"
-        arcade.draw_text(
-            cards_text,
-            10,
-            SCREEN_HEIGHT - 60,
-            UI_TEXT_COLOR,
-            UI_FONT_SIZE,
-            font_name=UI_FONT_NAME,
-            bold=True
-        )
 
     def on_update(self, delta_time):
         """Основной игровой цикл"""
