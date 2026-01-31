@@ -3,6 +3,7 @@ import arcade
 import pygame
 from database import GameDatabase
 from ui import GameOverMenu, CompleteMenu
+from music import Music
 
 
 class Game(arcade.Window):
@@ -94,6 +95,8 @@ class Game(arcade.Window):
         self.show_complete_menu = False
         self.complete_menu = None
 
+        self.music = Music()
+
     def setup(self):
         pygame.init()
         self.custom_cursor = arcade.Sprite('assets/ui_textures/8 Cursors/3.png', 1.0)
@@ -120,6 +123,9 @@ class Game(arcade.Window):
         else:
             self.show_main_menu = False
             self.game_started = True
+
+        if self.show_main_menu:
+            self.music.play_menu_music()
 
     def load_level(self, level_number):
         """Загрузить уровень"""
@@ -243,6 +249,8 @@ class Game(arcade.Window):
 
     def on_update(self, delta_time):
         if self.show_main_menu:
+            if self.music.current_music != "menu":
+                self.music.play_menu_music()
             if self.main_menu:
                 self.main_menu.update(delta_time)
             mouse_x = self._mouse_x
@@ -250,6 +258,10 @@ class Game(arcade.Window):
             self.custom_cursor.center_x = mouse_x
             self.custom_cursor.center_y = mouse_y
             return
+
+        if not self.paused and not self.show_game_over and not self.show_complete_menu:
+            if self.music.current_music != "battle":
+                self.music.play_battle_music()
 
         self.game_hud.update(delta_time)
         self.game_hud.set_health(self.player_health)
@@ -313,6 +325,7 @@ class Game(arcade.Window):
         if not self.game_completed and self.game_started and not self.show_game_over:
             save_data = self.get_save_data()
             self.database.save_game(save_data)
+        self.music.stop_all()
         pygame.quit()
         super().on_close()
 
@@ -442,6 +455,7 @@ class Game(arcade.Window):
 
                 self.show_main_menu = False
                 self.game_started = True
+                self.music.play_battle_music()
 
             elif action == "restart":
                 self.database.delete_all_saves()
@@ -449,6 +463,7 @@ class Game(arcade.Window):
                 self.restart_game()
                 self.show_main_menu = False
                 self.game_started = True
+                self.music.play_battle_music()
             return
 
         # Обработка кликов в меню завершения уровня
@@ -482,9 +497,10 @@ class Game(arcade.Window):
                 self.show_game_over = False
                 self.show_main_menu = True
                 self.game_started = False
+                self.music.play_menu_music()
             elif action == "restart":
-                # Перезапуск текущего уровня с начала
                 self.show_game_over = False
+                self.music.play_menu_music()
                 self.restart_game()
             return
 
@@ -493,14 +509,15 @@ class Game(arcade.Window):
 
             if action == "resume":
                 self.paused = False
+                self.music.play_battle_music()
             elif action == "exit":
                 save_data = self.get_save_data()
                 self.database.save_game(save_data)
                 self.paused = False
                 self.show_main_menu = True
                 self.game_started = False
+                self.music.play_menu_music()
             elif action == "restart":
-                # Рестарт ТОЛЬКО текущего уровня
                 self.database.delete_save_for_level(self.current_level_number)
                 self.restart_game()
                 self.paused = False
