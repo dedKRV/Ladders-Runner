@@ -2,6 +2,7 @@ import arcade
 import random
 from core import *
 import config_gun
+from particles import ParticleSystem
 
 
 class MainMenu:
@@ -85,6 +86,21 @@ class MainMenu:
                 'height': 1 * self.tile_size}
         }
 
+        self.particle_system = ParticleSystem()
+        self.shot_particle_timer = 0
+        self.shot_particle_interval = 0.5  # Интервал между выстрелами
+        self.gun_particle_positions = {
+            1: {'x': 5 * self.tile_size, 'y': 13.7 * self.tile_size},
+            2: {'x': 5 * self.tile_size, 'y': 10.7 * self.tile_size},
+            3: {'x': 5 * self.tile_size, 'y': 7.7 * self.tile_size}
+        }
+
+        self.exit_button_x = 32 * self.tile_size + 3 * self.tile_size / 2
+        self.exit_button_y = 2 * self.tile_size + 1.5 * self.tile_size / 2
+        self.exit_button_width = 6 * self.tile_size
+        self.exit_button_height = 3 * self.tile_size
+        self.exit_press_timer = 0
+
         # Загружаем все спрайт-листы
         self.background_layers = {}
         self.background_image_layers = {}
@@ -153,6 +169,7 @@ class MainMenu:
         self.button_layers['resume'] = self.menu_map.sprite_lists.get('resume', arcade.SpriteList())
         self.button_layers['gun_button'] = self.menu_map.sprite_lists.get('gun_button', arcade.SpriteList())
         self.button_layers['player_button'] = self.menu_map.sprite_lists.get('player_button', arcade.SpriteList())
+        self.button_layers['exit'] = self.menu_map.sprite_lists.get('exit', arcade.SpriteList())
 
         # Активные состояния кнопок
         self.button_active_layers['restart'] = self.menu_map.sprite_lists.get('restart_active', arcade.SpriteList())
@@ -161,6 +178,7 @@ class MainMenu:
                                                                                  arcade.SpriteList())
         self.button_active_layers['player_button'] = self.menu_map.sprite_lists.get('player_button_active',
                                                                                     arcade.SpriteList())
+        self.button_active_layers['exit'] = self.menu_map.sprite_lists.get('exit_active', arcade.SpriteList())
 
         # Кнопки оружия
         for i in range(1, 4):
@@ -222,9 +240,24 @@ class MainMenu:
         # Анимация оружия (только при открытом меню выбора оружия)
         if self.show_weapon_selection:
             self.gun_anim_timer += delta_time
+
             if self.gun_anim_timer >= self.gun_anim_duration:
                 self.gun_anim_timer = 0
                 self.current_gun_frame = (self.current_gun_frame + 1) % len(self.gun_anim_frames)
+
+                if self.current_gun_frame == 1:
+                    for weapon_type in [1, 2, 3]:
+                        if weapon_type in self.gun_particle_positions:
+                            pos = self.gun_particle_positions[weapon_type]
+                            self.particle_system.create_particles(
+                                pos['x'],
+                                pos['y'],
+                                f'shot_spark_{weapon_type}',
+                                0,
+                                30
+                            )
+            # Обновляем частицы
+        self.particle_system.update(delta_time)
 
         # Обновление таймеров нажатия кнопок
         if self.restart_press_timer > 0:
@@ -238,6 +271,9 @@ class MainMenu:
 
         if self.player_button_press_timer > 0:
             self.player_button_press_timer -= delta_time
+
+        if self.exit_press_timer > 0:
+            self.exit_press_timer -= delta_time
 
     def draw(self):
         """Отрисовка главного меню"""
@@ -276,6 +312,8 @@ class MainMenu:
 
         self._draw_text_elements()
 
+        self.particle_system.draw()
+
     def _draw_main_buttons(self):
         """Отрисовка основных кнопок"""
         # Кнопка RESTART
@@ -301,6 +339,12 @@ class MainMenu:
             self.button_active_layers['player_button'].draw()
         elif 'player_button' in self.button_layers:
             self.button_layers['player_button'].draw()
+
+        # Кнопка EXIT
+        if self.exit_press_timer > 0 and 'exit' in self.button_active_layers:
+            self.button_active_layers['exit'].draw()
+        elif 'exit' in self.button_layers:
+            self.button_layers['exit'].draw()
 
     def _draw_weapon_selection(self):
         """Отрисовка панели выбора оружия"""
@@ -388,6 +432,17 @@ class MainMenu:
             font_name=self.font_name
         )
 
+        arcade.draw_text(
+            "EXIT",
+            self.exit_button_x + 1.35 * TILE_SIZE,
+            self.exit_button_y + 0.8 * TILE_SIZE,
+            arcade.color.WHITE,
+            font_size=24,
+            anchor_x="center",
+            anchor_y="center",
+            font_name=self.font_name
+        )
+
     def check_click(self, x, y):
         """Проверка клика по всем кнопкам"""
         has_save = self.database.has_any_save()
@@ -397,26 +452,25 @@ class MainMenu:
             self.restart_press_timer = self.button_press_duration
             return "restart"
 
-        # Проверка кнопки RESUME (только если есть сохранение)
         if has_save and self._point_in_button(x, y, SCREEN_WIDTH / 2, self.resume_button_y,
                                               self.button_width, self.button_height):
             self.resume_press_timer = self.button_press_duration
             return "resume"
 
+        if self._point_in_button(x, y, self.exit_button_x, self.exit_button_y,
+                                 self.exit_button_width, self.exit_button_height):
+            self.exit_press_timer = self.button_press_duration
+            return "exit"
+
         if self._point_in_button(x, y, self.gun_button_x, self.gun_button_y,
                                  self.gun_button_width, self.gun_button_height):
             self.gun_button_press_timer = self.button_press_duration
 
-            # Переключаем отображение панели выбора оружия
             self.show_weapon_selection = not self.show_weapon_selection
             if self.show_weapon_selection:
                 self.show_frames_2 = True
                 self.show_player_selection = False
-                # Сбрасываем таймер анимации оружия при открытии
-                self.gun_anim_timer = 0
-                self.current_gun_frame = 0
             else:
-                # Если скрываем панель выбора оружия, проверяем нужно ли скрывать frames_2
                 if not self.show_player_selection:
                     self.show_frames_2 = False
 
@@ -425,20 +479,17 @@ class MainMenu:
         if self._point_in_button(x, y, self.player_button_x, self.player_button_y,
                                  self.player_button_width, self.player_button_height):
             self.player_button_press_timer = self.button_press_duration
-
             self.show_player_selection = not self.show_player_selection
             if self.show_player_selection:
                 self.show_frames_2 = True
                 self.show_weapon_selection = False
-                self.player_anim_timer = 0
-                self.current_player_anim_frame = 0
             else:
                 if not self.show_weapon_selection:
                     self.show_frames_2 = False
 
             return "player_button"
 
-        # Проверка кнопок выбора оружия (если панель открыта)
+        # Проверка кнопок выбора оружия
         if self.show_weapon_selection:
             for i in range(1, 4):
                 pos = self.gun_button_positions[i]
@@ -448,16 +499,16 @@ class MainMenu:
                     print(f"Выбрано оружие {i}")
                     return f"gun_select_{i}"
 
-        # Проверка кнопок выбора персонажа (если панель открыта)
+        # Проверка кнопок выбора персонажа
         if self.show_player_selection:
             for i in range(1, 4):
                 pos = self.player_button_positions[i]
                 if self._point_in_button(x, y, pos['x'], pos['y'], pos['width'], pos['height']):
-                    # Нажата кнопка выбора персонажа
                     self.current_player_choice = i
-                    config_gun.player = i  # Обновляем глобальную переменную в config_gun
+                    config_gun.player = i
                     print(f"Выбран персонаж {i}")
                     return f"player_select_{i}"
+
         return None
 
     def _point_in_button(self, x, y, button_x, button_y, button_width, button_height):

@@ -35,7 +35,7 @@ class Player(arcade.Sprite):
         self.climb_textures = []
         self.climb_textures_flipped = []
 
-        self.player_bullets = arcade.SpriteList()  # Теперь это SpriteList
+        self.player_bullets = arcade.SpriteList()
 
         self.load_textures()
 
@@ -162,6 +162,18 @@ class Player(arcade.Sprite):
             bullet.change_y = 0
 
             self.player_bullets.append(bullet)
+
+            # Искры выстрела с учетом типа оружия
+            if self.particle_emitter:
+                direction = 0 if self.facing_direction > 0 else 180
+                weapon_type = int(self.weapon.weapon_type)  # Получаем тип оружия (1, 2 или 3)
+                self.particle_emitter.emit_shot_spark(
+                    self.center_x + (self.facing_direction * 20),
+                    self.center_y,
+                    direction,
+                    weapon_type  # Передаем тип оружия
+                )
+
             return bullet
 
     def update_animation(self, delta_time, is_running=False, is_jumping=False, is_climbing=False, is_on_ladder=False,

@@ -55,17 +55,22 @@ class Enemy(arcade.Sprite):
             arcade.load_texture("assets/sprites/Enemies/2/Death_c/Death_5.png"),
             arcade.load_texture("assets/sprites/Enemies/2/Death_c/Death_6.png")
         ]
+        self.corpse_texture_right = self.dying_textures_right[-1]
 
         self.dying_textures_left = [
             tex.flip_left_right() for tex in self.dying_textures_right
         ]
+        self.corpse_texture_left = self.dying_textures_left[-1]
 
         self.texture = self.idle_texture_right
+
+        self.death_animation_complete = False
 
     def update(self, player, delta_time, walls):
         """Обновление логики врага"""
         if self.state == 'dead':
-            self.update_animation(delta_time)
+            if not self.death_animation_complete:
+                self.update_animation(delta_time)
             return
 
         if self.state == 'hurt':
@@ -137,15 +142,23 @@ class Enemy(arcade.Sprite):
                     else:
                         self.texture = self.idle_texture_left
 
+
         elif self.state == 'dead':
-            if self.animation_timer > 0.2:
-                self.animation_frame += 1
-                if self.animation_frame < 6:
-                    if self.facing_direction == 1:
-                        self.texture = self.dying_textures_right[self.animation_frame]
-                    else:
-                        self.texture = self.dying_textures_left[self.animation_frame]
+            if not self.death_animation_complete:
+                if self.animation_timer > 0.2:
+                    self.animation_frame += 1
                     self.animation_timer = 0
+                    if self.animation_frame < 6:
+                        if self.facing_direction == 1:
+                            self.texture = self.dying_textures_right[self.animation_frame]
+                        else:
+                            self.texture = self.dying_textures_left[self.animation_frame]
+                    else:
+                        self.death_animation_complete = True
+                        if self.facing_direction == 1:
+                            self.texture = self.corpse_texture_right
+                        else:
+                            self.texture = self.corpse_texture_left
 
     def take_damage(self, damage):
         """Получение урона врагом"""
@@ -155,6 +168,7 @@ class Enemy(arcade.Sprite):
         self.health -= damage
         if self.health <= 0:
             self.state = 'dead'
+            self.death_animation_complete = False
             # Устанавливаем начальную текстуру смерти в нужном направлении
             if self.facing_direction == 1:
                 self.texture = self.dying_textures_right[0]
@@ -173,7 +187,7 @@ class Enemy(arcade.Sprite):
 
     def shoot(self, player):
         """Стрельба в игрока"""
-        if self.state == 'dead':
+        if self.state == 'dead' or self.death_animation_complete:
             return None
 
         # Сразу создаем пулю
@@ -188,8 +202,15 @@ class Enemy(arcade.Sprite):
         if distance > 0:
             bullet.change_x = (dx / distance) * BULLET_SPEED
             bullet.change_y = (dy / distance) * BULLET_SPEED
-
         self.bullets.append(bullet)
+        if self.particle_emitter:
+            direction = math.degrees(math.atan2(dy, dx))
+            self.particle_emitter.emit_enemy_shot_spark(
+                self.center_x,
+                self.center_y,
+                direction
+            )
+
         return bullet
 
 

@@ -27,6 +27,7 @@ class BaseLevel(arcade.Window):
         self.jump_list = None
         self.cards_list = None
         self.spawn_entities_list = None
+        self.particle_emitter = None
 
         self.animation_layer_sprites = {}
         self.jump_animation_sprites = {}
@@ -286,6 +287,7 @@ class BaseLevel(arcade.Window):
                 damage,
                 ENEMY_Y_OFFSET
             )
+            enemy.particle_emitter = self.particle_emitter
             self.enemies.append(enemy)
 
         self.update_exit_visibility()
@@ -305,6 +307,14 @@ class BaseLevel(arcade.Window):
 
             if self.game_hud:
                 self.game_hud.show_blood_animation()
+
+            # Частицы крови при получении урона
+            if hasattr(self, 'particle_emitter') and self.player:
+                self.particle_emitter.emit_blood(
+                    self.player.center_x,
+                    self.player.center_y,
+                    90
+                )
 
             if self.player_health < 0:
                 self.player_health = 0
@@ -332,7 +342,17 @@ class BaseLevel(arcade.Window):
                 all_enemies_dead = False
                 break
 
-        time_bonus = self.play_time <= PERFECT_TIME
+        # Определяем идеальное время в зависимости от уровня
+        if self.get_level_number() == 1:
+            perfect_time = PERFECT_TIME
+        elif self.get_level_number() == 2:
+            perfect_time = PERFECT_TIME_2
+        elif self.get_level_number() == 3:
+            perfect_time = PERFECT_TIME_3
+        else:
+            perfect_time = PERFECT_TIME
+
+        time_bonus = self.play_time <= perfect_time
 
         # Подсчёт звёзд
         if all_cards_collected and all_enemies_dead and time_bonus:
@@ -431,13 +451,28 @@ class BaseLevel(arcade.Window):
                     if enemy.take_damage(bullet.damage):
                         money = Money(enemy.center_x, enemy.center_y)
                         self.money_list.append(money)
-                        self.enemies.remove(enemy)
                         self.game_hud.add_kill()
+                        # Частицы крови при убийстве врага
+                        if hasattr(self, 'particle_emitter'):
+                            self.particle_emitter.emit_blood(
+                                bullet.center_x,
+                                bullet.center_y,
+                                0
+                            )
+                    else:
+                        # Частицы попадания (если враг не умер)
+                        if hasattr(self, 'particle_emitter'):
+                            self.particle_emitter.emit_hit(
+                                bullet.center_x,
+                                bullet.center_y,
+                                0
+                            )
                     break
 
         for bullet in player_bullets_to_remove:
             if bullet in self.player.player_bullets:
                 self.player.player_bullets.remove(bullet)
+
 
     def on_draw(self):
         """Отрисовка всех объектов"""
@@ -526,9 +561,13 @@ class BaseLevel(arcade.Window):
             card.update(delta_time)
 
         for enemy in self.enemies:
+            if enemy.state == 'dead' and not enemy.death_animation_complete:
+                enemy.update_animation(delta_time)
+                continue
             enemy.update(self.player, delta_time, self.walls)
 
             bullets_to_remove = []
+
             for bullet in enemy.bullets:
                 bullet.update(delta_time)
 
@@ -554,13 +593,21 @@ class BaseLevel(arcade.Window):
 
         bullets_to_remove = []
         for bullet in self.enemy_bullets:
-            if bullet.should_remove:
+            wall_hit_list = arcade.check_for_collision_with_list(bullet, self.walls)
+            if wall_hit_list:
                 bullets_to_remove.append(bullet)
-            elif (bullet.center_x < -SCREEN_MARGIN or
-                  bullet.center_x > SCREEN_WIDTH + SCREEN_MARGIN or
-                  bullet.center_y < -SCREEN_MARGIN or
-                  bullet.center_y > SCREEN_HEIGHT + SCREEN_MARGIN):
+                continue
+
+            if arcade.check_for_collision(bullet, self.player):
+                self.apply_damage(bullet.damage)
                 bullets_to_remove.append(bullet)
+                # Частицы крови при попадании в игрока
+                if hasattr(self, 'particle_emitter'):
+                    self.particle_emitter.emit_blood(
+                        bullet.center_x,
+                        bullet.center_y,
+                        180
+                    )
 
         for bullet in bullets_to_remove:
             if bullet in self.enemy_bullets:

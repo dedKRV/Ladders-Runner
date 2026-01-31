@@ -1,6 +1,6 @@
 player = 1  # (1-3)
-gun = 2   # (1-3)
-level = 2 # (1-2)
+gun = 1   # (1-3)
+level = 1 # (1-3)
 
 def get_player_choice():
     """Получить выбор персонажа"""
@@ -30,6 +30,8 @@ def get_level_choice():
         return 1
     elif level == 2:
         return 2
+    elif level == 3:
+        return 3
     else:
         return 1
 

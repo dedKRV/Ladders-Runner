@@ -4,6 +4,7 @@ import pygame
 from database import GameDatabase
 from ui import GameOverMenu, CompleteMenu
 from music import Music
+from particles import ParticleSystem, ParticleEmitter
 
 
 class Game(arcade.Window):
@@ -81,6 +82,9 @@ class Game(arcade.Window):
         self.camera = arcade.Camera2D()
         self.camera.zoom = ZOOM_CAM
 
+        self.particle_system = ParticleSystem()
+        self.particle_emitter = ParticleEmitter(self.particle_system)
+
         self.paused = False
         self.pause_menu = None
         self.show_main_menu = True
@@ -91,7 +95,6 @@ class Game(arcade.Window):
         self.show_game_over = False
         self.game_over_menu = None
 
-        # Новые атрибуты для меню завершения уровня
         self.show_complete_menu = False
         self.complete_menu = None
 
@@ -149,6 +152,10 @@ class Game(arcade.Window):
             from level_2 import GameWindow2 as GameWindow
             from enemy_config import LEVEL_2_CARDS
             self.total_cards = len(LEVEL_2_CARDS)
+        elif level_number == 3:
+            from level_3 import GameWindow3 as GameWindow
+            from enemy_config import LEVEL_3_CARDS
+            self.total_cards = len(LEVEL_3_CARDS)
 
         # Копируем методы из класса уровня
         self.setup_level = GameWindow.setup.__get__(self, Game)
@@ -174,12 +181,19 @@ class Game(arcade.Window):
 
         # Вызываем setup уровня
         self.setup_level()
+        # Передаем particle_emitter на уровень
+        if hasattr(self, 'particle_emitter'):
+            if hasattr(self, 'player'):
+                self.player.particle_emitter = self.particle_emitter
+            if hasattr(self, 'enemies'):
+                for enemy in self.enemies:
+                    enemy.particle_emitter = self.particle_emitter
 
     def switch_to_next_level(self):
         """Переключиться на следующий уровень"""
         next_level = self.current_level_number + 1
 
-        if next_level <= 2:
+        if next_level <= 3:  # Изменили с 2 на 3
             # Сбрасываем HUD перед загрузкой нового уровня
             self.game_hud.reset()
             # Удаляем сохранение предыдущего уровня
@@ -193,17 +207,19 @@ class Game(arcade.Window):
         else:
             print("Игра пройдена! Поздравляем!")
             self.database.delete_all_saves()
-            arcade.close_window()
+            # Можно показать финальное меню или закрыть игру
+            self.show_complete_menu = True
+            self.complete_menu.set_stars(self.stars_earned)
 
     def prepare_next_level(self):
         """Подготовить переход на следующий уровень (создать начальное сохранение)"""
         next_level = self.current_level_number + 1
 
-        if next_level <= 2:
+        if next_level <= 3:  # Изменили с 2 на 3
             # Сбрасываем HUD
             self.game_hud.reset()
 
-        if next_level <= 2:
+        if next_level <= 3:  # Изменили с 2 на 3
             # Удаляем сохранение текущего уровня
             self.database.delete_save_for_level(self.current_level_number)
 
@@ -220,6 +236,9 @@ class Game(arcade.Window):
             elif next_level == 2:
                 from enemy_config import LEVEL_2_SPAWN
                 spawn_x, spawn_y = LEVEL_2_SPAWN
+            elif next_level == 3:
+                from enemy_config import LEVEL_3_SPAWN
+                spawn_x, spawn_y = LEVEL_3_SPAWN
             else:
                 spawn_x, spawn_y = 3, 17
 
@@ -288,6 +307,20 @@ class Game(arcade.Window):
 
         # Вызываем update уровня
         self.on_update_level(delta_time)
+
+        # Обновляем частицы
+        self.particle_system.update(delta_time)
+        if not self.show_main_menu and not self.paused and not self.show_game_over and not self.show_complete_menu:
+            if self.player:
+                if hasattr(self, 'physics_engine') and self.physics_engine:
+                    is_on_ground = self.physics_engine.can_jump()
+                    self.particle_emitter.update_run(
+                        delta_time,
+                        self.is_running and is_on_ground,  # Только если бежит и на земле
+                        self.player.center_x,
+                        self.player.center_y,
+                        self.player.facing_direction
+                    )
 
         # Проверяем завершение уровня
         if self.game_completed:
@@ -406,6 +439,7 @@ class Game(arcade.Window):
             self.camera.use()
 
             self.on_draw_level()
+            self.particle_system.draw()
 
             self.camera.position = saved_position
             self.camera.zoom = saved_zoom
@@ -425,6 +459,7 @@ class Game(arcade.Window):
         else:
             self.camera.use()
             self.on_draw_level()
+            self.particle_system.draw()
             # Рисуем HUD поверх игры
             saved_position = self.camera.position
             saved_zoom = self.camera.zoom
@@ -464,6 +499,10 @@ class Game(arcade.Window):
                 self.show_main_menu = False
                 self.game_started = True
                 self.music.play_battle_music()
+
+            elif action == "exit":
+                print("Выход из игры")
+                self.close()
             return
 
         # Обработка кликов в меню завершения уровня
