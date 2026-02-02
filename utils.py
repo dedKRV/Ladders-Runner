@@ -160,6 +160,10 @@ class Game(arcade.Window):
             from level_4 import GameWindow4 as GameWindow
             from enemy_config import LEVEL_4_CARDS
             self.total_cards = len(LEVEL_4_CARDS)
+        elif level_number == 5:
+            from level_5 import GameWindow5 as GameWindow
+            from enemy_config import LEVEL_5_CARDS
+            self.total_cards = len(LEVEL_5_CARDS)
 
         # Копируем методы из класса уровня
         self.setup_level = GameWindow.setup.__get__(self, Game)
@@ -197,7 +201,7 @@ class Game(arcade.Window):
         """Переключиться на следующий уровень"""
         next_level = self.current_level_number + 1
 
-        if next_level <= 4:
+        if next_level <= 5:
             # Сбрасываем HUD перед загрузкой нового уровня
             self.game_hud.reset()
             # Удаляем сохранение предыдущего уровня
@@ -219,7 +223,7 @@ class Game(arcade.Window):
         """Подготовить переход на следующий уровень (создать начальное сохранение)"""
         next_level = self.current_level_number + 1
 
-        if next_level <= 4:
+        if next_level <= 5:
             # Сбрасываем HUD
             self.game_hud.reset()
 
@@ -246,6 +250,9 @@ class Game(arcade.Window):
             elif next_level == 4:
                 from enemy_config import LEVEL_4_SPAWN
                 spawn_x, spawn_y = LEVEL_4_SPAWN
+            elif next_level == 5:
+                from enemy_config import LEVEL_5_SPAWN
+                spawn_x, spawn_y = LEVEL_5_SPAWN
             else:
                 spawn_x, spawn_y = 3, 17
 

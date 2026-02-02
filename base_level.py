@@ -351,6 +351,8 @@ class BaseLevel(arcade.Window):
             perfect_time = PERFECT_TIME_3
         elif self.get_level_number() == 4:
             perfect_time = PERFECT_TIME_4
+        elif self.get_level_number() == 5:
+            perfect_time = PERFECT_TIME_5
         else:
             perfect_time = PERFECT_TIME
 

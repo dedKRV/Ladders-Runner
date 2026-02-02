@@ -20,6 +20,9 @@ def get_game_window_class(level_number=None):
     elif level_number == 4:
         from level_4 import GameWindow4
         return GameWindow4
+    elif level_number == 5:
+        from level_5 import GameWindow5
+        return GameWindow5
     else:
         from level_1 import GameWindow as Level1Class
         return Level1Class
@@ -38,5 +41,8 @@ def create_next_level_window(current_level, width, height, title):
     elif next_level == 4:
         from level_4 import GameWindow4
         return GameWindow4(width, height, title)
+    elif next_level == 5:
+        from level_5 import GameWindow5
+        return GameWindow5(width, height, title)
     else:
         return None

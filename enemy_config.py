@@ -47,3 +47,9 @@ LEVEL_4_CARDS = [
     (21, 6),
     (21, 2),
 ]
+
+# Уровень 5
+LEVEL_5_SPAWN = (2, 20)
+LEVEL_5_ENEMIES = (2.0, 10)
+LEVEL_5_CARDS = [
+]

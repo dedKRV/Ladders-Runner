@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "menu.tmx",
+    "activeFile": "level_5.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -181,12 +181,12 @@
         },
         "D:/Project/assets/tilesets/5.tsx": {
             "dynamicWrapping": true,
-            "scaleInDock": 0.25,
+            "scaleInDock": 0.33,
             "scaleInEditor": 0.5
         },
         "D:/Project/assets/tilesets/6.tsx": {
             "dynamicWrapping": true,
-            "scaleInDock": 0.125,
+            "scaleInDock": 0.25,
             "scaleInEditor": 0.33
         },
         "D:/Project/assets/tilesets/8.tsx": {
@@ -331,15 +331,15 @@
             "scale": 1,
             "selectedLayer": 9,
             "viewCenter": {
-                "x": 666,
-                "y": 589.5
+                "x": 640,
+                "y": 367.5
             }
         },
         "level_2.tmx": {
             "scale": 0.75,
             "selectedLayer": 8,
             "viewCenter": {
-                "x": 640,
+                "x": 639.9999999999999,
                 "y": 367.33333333333337
             }
         },
@@ -360,8 +360,8 @@
             "scale": 1,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 561.5,
-                "y": 346
+                "x": 640,
+                "y": 367.5
             }
         },
         "level_3.tmx#9": {
@@ -372,19 +372,27 @@
             "scaleInDock": 0.5
         },
         "level_4.tmx": {
-            "scale": 0.8082421875,
-            "selectedLayer": 0,
+            "scale": 1,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 601.9235416364603,
-                "y": 300.65245759025674
+                "x": 488.5,
+                "y": 373
+            }
+        },
+        "level_5.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 631.3333333333333,
+                "y": 162.66666666666669
             }
         },
         "menu.tmx": {
             "scale": 0.75,
             "selectedLayer": 12,
             "viewCenter": {
-                "x": 639.3333333333333,
-                "y": 316
+                "x": 639.9999999999999,
+                "y": 367.33333333333337
             }
         },
         "menu.tmx#ButtonMap1": {
@@ -422,14 +430,14 @@
         },
         "pause.tmx": {
             "expandedObjectLayers": [
-                3,
                 4,
-                2
+                2,
+                3
             ],
             "scale": 0.33,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 478.78787878787875,
+                "x": 478.78787878787887,
                 "y": 319.69696969696963
             }
         },
@@ -464,7 +472,9 @@
         "D:/Project/assets/tilesets/ui.tsx",
         "interface.tmx",
         "level_3.tmx",
-        "D:/Project/assets/tilesets/ButtonMap3.tsx"
+        "D:/Project/assets/tilesets/ButtonMap3.tsx",
+        "level_4.tmx",
+        "level_5.tmx"
     ],
     "project": "tiled.tiled-project",
     "recentFiles": [
@@ -474,12 +484,12 @@
         "complete.tmx",
         "level_2.tmx",
         "D:/Project/assets/tilesets/8.tsx",
-        "D:/Project/assets/tilesets/ButtonMap3.tsx",
-        "level_3.tmx",
-        "interface.tmx",
-        "D:/Project/assets/tilesets/ui.tsx",
         "menu.tmx",
-        "C:/Users/rioni/OneDrive/Desktop/безымянный.tmx"
+        "D:/Project/assets/tilesets/ui.tsx",
+        "interface.tmx",
+        "level_3.tmx",
+        "D:/Project/assets/tilesets/ButtonMap3.tsx",
+        "level_4.tmx"
     ],
     "tileset.embedInMap": true,
     "tileset.lastUsedFilter": "Все файлы (*)",
