@@ -58,7 +58,9 @@ DOLLAR_ANIM_DURATION = 0.05
 CARD_ANIM_DURATION = 0.05
 BLOOD_ANIM_DURATION = 0.1
 
+# Добавьте в core.py рядом с другими констант
 MUSIC_VOLUME = 0.5
+SFX_VOLUME = 2.5
 
 # Настройки частиц
 PARTICLE_BLOOD_COUNT = 15
