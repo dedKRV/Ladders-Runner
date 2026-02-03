@@ -3,7 +3,7 @@ from core import *
 from entities import Player
 from enemies import Enemy, Bullet, Card, Money
 from control import Controls
-
+from music import Music
 
 class BaseLevel(arcade.Window):
     """Базовый класс для всех уровней"""
@@ -320,6 +320,7 @@ class BaseLevel(arcade.Window):
                 self.player_health = 0
 
             if self.player_health <= 0:
+                self.music.play_player_dead()
                 self.show_game_over = True
                 self.damage_cooldown = 0
                 self.shoot_timer = 0

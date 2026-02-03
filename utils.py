@@ -171,7 +171,7 @@ class Game(arcade.Window):
         self.on_draw_level = GameWindow.on_draw.__get__(self, Game)
         self.check_collisions = GameWindow.check_collisions.__get__(self, Game)
         self.check_game_completion = GameWindow.check_game_completion.__get__(self, Game)
-        # apply_damage НЕ копируем — используем свой метод с звуком смерти
+        self.apply_damage = GameWindow.apply_damage.__get__(self, Game)
         self.restart_game = GameWindow.restart_game.__get__(self, Game)
         self.get_save_data = GameWindow.get_save_data.__get__(self, Game)
         self.load_from_save = GameWindow.load_from_save.__get__(self, Game)
