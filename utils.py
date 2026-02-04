@@ -99,6 +99,8 @@ class Game(arcade.Window):
         self.complete_menu = None
 
         self.music = Music()
+        self.show_final_menu = False
+        self.final_menu = None
 
     def setup(self):
         pygame.init()
@@ -109,11 +111,12 @@ class Game(arcade.Window):
         self.load_level(self.current_level_number)
 
         # Инициализируем меню
-        from ui import PauseMenu, MainMenu, GameOverMenu, CompleteMenu
+        from ui import PauseMenu, MainMenu, GameOverMenu, CompleteMenu, FinalMenu
         self.pause_menu = PauseMenu()
         self.main_menu = MainMenu(self.database)
         self.game_over_menu = GameOverMenu()
         self.complete_menu = CompleteMenu()
+        self.final_menu = FinalMenu()
 
         # Загружаем настройки из choice
         from choice import player, gun
@@ -228,8 +231,8 @@ class Game(arcade.Window):
         else:
             print("Игра пройдена! Поздравляем!")
             self.database.delete_all_saves()
-            self.show_complete_menu = True
-            self.complete_menu.set_stars(self.stars_earned)
+            self.show_complete_menu = False
+            self.show_final_menu = True
 
     def prepare_next_level(self):
         """Подготовить переход на следующий уровень (создать начальное сохранение)"""
@@ -294,7 +297,12 @@ class Game(arcade.Window):
             self.custom_cursor.center_x = mouse_x
             self.custom_cursor.center_y = mouse_y
             return
-
+        if self.show_final_menu:
+            mouse_x = self._mouse_x
+            mouse_y = self._mouse_y
+            self.custom_cursor.center_x = mouse_x
+            self.custom_cursor.center_y = mouse_y
+            return
         if not self.paused and not self.show_game_over and not self.show_complete_menu:
             if self.music.current_music != "battle":
                 self.music.play_battle_music()
@@ -386,6 +394,11 @@ class Game(arcade.Window):
 
         if self.show_main_menu and self.main_menu:
             self.main_menu.draw()
+            self.set_mouse_visible(False)
+            arcade.draw_sprite(self.custom_cursor)
+            return
+        if self.show_final_menu and self.final_menu:
+            self.final_menu.draw()
             self.set_mouse_visible(False)
             arcade.draw_sprite(self.custom_cursor)
             return
@@ -523,6 +536,17 @@ class Game(arcade.Window):
             elif action == "exit":
                 print("Выход из игры")
                 self.close()
+            return
+
+        if self.show_final_menu and self.final_menu:
+            action = self.final_menu.check_click(x, y)
+
+            if action == "exit":
+                print("Выход в главное меню после победы")
+                self.show_final_menu = False
+                self.show_main_menu = True
+                self.game_started = False
+                self.music.play_menu_music()
             return
 
         # Меню завершения уровня

@@ -1,5 +1,8 @@
 import arcade
 import random
+
+from arcade.color import SKY_BLUE
+
 from core import *
 import choice
 from particles import ParticleSystem
@@ -1113,3 +1116,63 @@ class GameHUD:
 
         self.blood_timer = 0
         self.show_blood = False
+
+class FinalMenu:
+    """Финальное меню победы"""
+
+    def __init__(self):
+        self.final_map = arcade.load_tilemap("data/final.tmx", scaling=TILE_SCALING)
+        self.background_list = self.final_map.sprite_lists.get('button and logo', arcade.SpriteList())
+        self.offset_x = 0
+        self.offset_y = 0
+
+        self.font_name = "assets/ui_textures/10 Font/CyberpunkCraftpixPixel.otf"
+
+        self.exit_hitbox = {
+            'min_x': 484,
+            'max_x': 800,
+            'min_y': 200,
+            'max_y': 290
+        }
+
+    def draw(self):
+        """Отрисовка финального меню"""
+        if self.background_list:
+            self.background_list.draw()
+
+        for sprite in self.background_list:
+            sprite.center_x += self.offset_x
+            sprite.center_y += self.offset_y
+
+        arcade.draw_text(
+            "YOU WIN!",
+            SCREEN_WIDTH / 2,
+            SCREEN_HEIGHT / 2 + 140,
+            arcade.color.WHITE,
+            font_size=48,
+            anchor_x="center",
+            anchor_y="center",
+            font_name=self.font_name,
+            bold=True
+        )
+        arcade.draw_text(
+            "EXIT",
+            SCREEN_WIDTH / 2,
+            245,
+            arcade.color.WHITE,
+            font_size=32,
+            anchor_x="center",
+            anchor_y="center",
+            font_name=self.font_name
+        )
+
+    def check_click(self, x, y):
+        """Проверка клика по кнопке выхода"""
+        if self._point_in_hitbox(x, y, self.exit_hitbox):
+            return "exit"
+        return None
+
+    def _point_in_hitbox(self, x, y, hitbox):
+        """Проверка попадания точки в hitbox"""
+        return (hitbox['min_x'] <= x <= hitbox['max_x'] and
+                hitbox['min_y'] <= y <= hitbox['max_y'])
