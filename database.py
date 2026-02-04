@@ -1,17 +1,24 @@
 import sqlite3
-from datetime import datetime
+import os
+import sys
 
 
 class GameDatabase:
     """Управление базой данных игры"""
 
     def __init__(self, db_file="game_save.db"):
-        self.db_file = db_file
+        if getattr(sys, 'frozen', False):
+            # В EXE - рядом с EXE файлом
+            self.db_path = os.path.join(os.path.dirname(sys.executable), db_file)
+        else:
+            # При разработке
+            self.db_path = db_file
+
         self.create_tables()
 
     def connect(self):
         """Подключение к базе данных"""
-        conn = sqlite3.connect(self.db_file, timeout=10.0)
+        conn = sqlite3.connect(self.db_path, timeout=10.0)
         conn.row_factory = sqlite3.Row
         return conn
 
