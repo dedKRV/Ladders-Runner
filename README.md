@@ -4,6 +4,11 @@
 
 ОПП2 25/26 Яндекс Лицей
 
+Видео
+----
+Ссылка на видео - https://drive.google.com/file/d/1OnJLnME0LivhlINyD9C3PU1s3JK8UUKw/view?usp=sharing
+
+
 Обзор проекта
 ----
 Ladders Runner — это платформенный шутер, созданный на базе фреймворка Arcade на языке Python. Игроку предстоит пройти через 5 уникальных уровней, сражаясь с врагами, собирая коллекционные карты и избегая смертельных ловучек.
@@ -156,5 +161,3 @@ Ladders Runner/
 Отдельные сохранения для каждого уровня
 
 Возможность продолжить с любого уровня
-
-Ссылка на видео - https://drive.google.com/file/d/1OnJLnME0LivhlINyD9C3PU1s3JK8UUKw/view?usp=sharing
